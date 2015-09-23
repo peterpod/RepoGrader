@@ -14,7 +14,7 @@
 
   <!-- Latest compiled and minified JavaScript -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
 	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -57,13 +57,13 @@
 
 	<div class="container">
       <!-- Intro text -->
-      <p class="col-centered text-center">Github Analytics is a user-friendly application designed to help developers
-      decide which technologies to use when beginning development. We provide side-by-side
-      comparison of existing github repo's and make suggestions based on a set of simple
-      metrics.
-      </p>
+      <div class="row">
+        <div class="col-sm-12">
+          <p class="col-centered text-center" style="word-wrap: break-word;"><%= repo %> </p>
 
-      <hr>
+          <hr>
+        </div>
+      </div>
 
       <footer>
         <p class="col-centered text-center">&copy; Peter Podniesinski 2015</p>
