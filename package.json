@@ -1,0 +1,16 @@
+{
+  "name": "minihack",
+  "version": "1.0.0",
+  "description": "Application to compare github repositories.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Peter Podniesinski",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.3",
+    "github": "^0.2.4",
+    "morgan": "^1.6.1"
+  }
+}
