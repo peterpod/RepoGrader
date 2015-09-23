@@ -1,4 +1,4 @@
-# miniHack
+# RepoGrader
 Creating a web app to help developers compare github repositories.
 
 Public git repo: *https://github.com/peterpod/RepoGrader*
