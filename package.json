@@ -9,8 +9,11 @@
   "author": "Peter Podniesinski",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.14.0",
+    "ejs": "^2.3.4",
     "express": "^4.13.3",
     "github": "^0.2.4",
+    "method-override": "^2.3.5",
     "morgan": "^1.6.1"
   }
 }
