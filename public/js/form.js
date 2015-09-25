@@ -15,6 +15,3 @@ $(function() {    // do once original document loaded and ready
 		return false;	
 	});
 }); // onReady
-
-
-			

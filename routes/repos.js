@@ -29,10 +29,9 @@ router.get('/', function(req, res) {
 	    user: username,
 	    repo: repository
 	}, function(err, data) {
-	    res.render('home', { repo: JSON.stringify(data)});
+	    res.render('home', { repo: data});
 	});
 });
-
 
 /*UserRepo = function(req, res) {
     var username = req.params.user;
