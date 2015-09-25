@@ -50,6 +50,18 @@
                   </span>
               </div><!-- /input-group -->
             </form>
+
+            <% if (error_msgs.length > 0) {%>
+                <div class="alert alert-danger">
+                  <%= error_msgs %>
+                </div>
+            <% } %>
+            <% if (success_msgs.length > 0) { %>
+                <div class="alert alert-success">
+                  <%= success_msgs %>
+                </div>
+            <% } %>
+            
           </div><!-- /.col-lg-6 -->
         </div><!-- /.row -->
       </div>
