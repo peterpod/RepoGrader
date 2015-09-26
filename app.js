@@ -10,7 +10,6 @@ var express = require("express"),
 // express will help us build the routes
 var app = express();
 
-
 app.set('views', __dirname + '/views');
 // Define the view (templating) engine
 app.set('view engine', 'ejs'); //ejs will be the default viewing template
@@ -20,15 +19,6 @@ app.use(bodyParser.urlencoded({    // to support URL-encoded bodies
   extended: true
 }));
 
-app.use(cookieParser('your secret here'));
-app.use(session({
-    secret: "cookie_secret",
-    //store: sessionStore, // relace default store with connect-mongo session store
-    resave: true,
-    saveUninitialized: true
-}));
-
-
 app.use(methodOverride(function(req, res){
       if (req.body && typeof req.body === 'object' && '_method' in req.body) {
         // look in urlencoded POST bodies and delete it
@@ -36,6 +26,14 @@ app.use(methodOverride(function(req, res){
         delete req.body._method
         return method
       }
+}));
+
+app.use(cookieParser('your secret here'));
+app.use(session({
+    secret: "cookie_secret",
+    //store: sessionStore, // relace default store with connect-mongo session store
+    resave: true,
+    saveUninitialized: true
 }));
 
 // Flash mesages, done after setting up session and cookie parser

@@ -50,18 +50,14 @@
                   </span>
               </div><!-- /input-group -->
             </form>
+            <br>
 
-            <% if (error_msgs.length > 0) {%>
-                <div class="alert alert-danger">
-                  <%= error_msgs %>
+            <% if ( typeof message  != 'undefined') { %>
+                <div class="alert alert-danger alert-dismissible" role="alert"> Could not find repository! 
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
             <% } %>
-            <% if (success_msgs.length > 0) { %>
-                <div class="alert alert-success">
-                  <%= success_msgs %>
-                </div>
-            <% } %>
-            
+
           </div><!-- /.col-lg-6 -->
         </div><!-- /.row -->
       </div>
@@ -71,7 +67,10 @@
       <!-- Intro text -->
       <div class="row">
         <div class="col-sm-12">
-          <p class="col-centered text-center" style="word-wrap: break-word;">  <% include partials/repo %></p>
+          <p class="col-centered text-center" style="word-wrap: break-word;">  
+          <% if (typeof repo != 'undefined') {%>
+            <% include partials/repo %></p>
+          <% } %>
 
           <hr>
         </div>

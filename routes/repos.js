@@ -29,11 +29,12 @@ router.get('/', function(req, res) {
         repo: repository
     }, function(err, data) {
         if(err){
-            req.flash('error', "Could not find repository!");
-            res.redirect('/repos');
+            console.log("Error here");
+            res.render('home', { message: "Could not find repository"});
         }
         else{
-            res.render('home', { repo: data});
+            console.log("Callback was successfully made.")
+            res.render('home', { repo: data });
         }
     });
 });
