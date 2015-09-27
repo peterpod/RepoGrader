@@ -1,13 +1,14 @@
-var express = require("express");
-var morgan = require("morgan");
-var repos = require('./routes/repos'); 
-var bodyParser = require('body-parser');
-var methodOverride = require('method-override'); //used to manipulate POST, DELETE, etc
-
+var express = require("express"),
+    morgan = require("morgan"),
+    repos = require('./routes/repos'),
+    bodyParser = require('body-parser'),
+    methodOverride = require('method-override'),
+    cookieParser = require('cookie-parser'),
+    session = require('express-session'),
+    flash = require('connect-flash');
     
 // express will help us build the routes
 var app = express();
-
 
 app.set('views', __dirname + '/views');
 // Define the view (templating) engine
@@ -17,6 +18,7 @@ app.use(bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({    // to support URL-encoded bodies
   extended: true
 }));
+
 app.use(methodOverride(function(req, res){
       if (req.body && typeof req.body === 'object' && '_method' in req.body) {
         // look in urlencoded POST bodies and delete it
@@ -25,6 +27,22 @@ app.use(methodOverride(function(req, res){
         return method
       }
 }));
+
+app.use(cookieParser('your secret here'));
+app.use(session({
+    secret: "cookie_secret",
+    //store: sessionStore, // relace default store with connect-mongo session store
+    resave: true,
+    saveUninitialized: true
+}));
+
+// Flash mesages, done after setting up session and cookie parser
+app.use(flash());
+app.use(function(req, res, next){
+  res.locals.success_msgs = req.flash('success');
+  res.locals.error_msgs = req.flash('error');
+  next();
+});
 
 app.use(morgan('tiny'));  // Log requests
 

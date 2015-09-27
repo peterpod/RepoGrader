@@ -22,28 +22,21 @@ router.get('/', function(req, res) {
     var searchText = req.query.searchText;
     var username = searchText.split('/')[0];
     var repository = searchText.split('/')[1];
-    console.log("searchText" + searchText);
-    console.log(JSON.stringify(req.query));
 
+    // call github API to get repo info
     github.repos.get({
-	    user: username,
-	    repo: repository
-	}, function(err, data) {
-	    res.render('home', { repo: data});
-	});
+        user: username,
+        repo: repository
+    }, function(err, data) {
+        if(err){
+            console.log("Error here");
+            res.render('home', { message: "Could not find repository"});
+        }
+        else{
+            console.log("Callback was successfully made.")
+            res.render('home', { repo: data });
+        }
+    });
 });
-
-/*UserRepo = function(req, res) {
-    var username = req.params.user;
-    var repository = req.params.repo;
-    console.log("username" + username + "repo" + repository);
-    github.repos.get({
-	    user: username,
-	    repo: repository
-	}, function(err, res) {
-	    console.log(JSON.stringify(res));
-	});
-}
-*/
 
 module.exports = router;
