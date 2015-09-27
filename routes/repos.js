@@ -17,6 +17,16 @@ var github = new GitHubApi({
     }
 });
 
+// determine if repo is already stored
+function contains(array, repo){
+    for( i = 0; i< array.length; i++){
+        if(array[i].name == repo){
+            return true;
+        }
+    }
+    return false;
+}
+
 var repositories = []; // array to store all repo info
 
 /* routing function to get a user's repo */
@@ -35,9 +45,13 @@ router.get('/', function(req, res) {
             res.render('home', { message: "Could not find repository"});
         }
         else{
-            console.log(JSON.stringify(data));
+            // if not stored add it to the array
+            if(!contains(repositories, data.name)){
+                repositories.push(data);
+            }
+            console.log(JSON.stringify(repositories));
             console.log("Callback was successfully made.")
-            res.render('home', { repo: data });
+            res.render('home', { repos: repositories });
         }
     });
 });
