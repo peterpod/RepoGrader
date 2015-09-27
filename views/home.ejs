@@ -70,9 +70,9 @@
           <p class="col-centered text-center" style="word-wrap: break-word;">  
           <% if(typeof repos != 'undefined') { %>
             <!-- render partial for each repo -->
-            <% for( repo in repos ){ %>
+            <% repos.forEach(function(repo){ %>
               <% include partials/repo %></p> 
-            <% } %>
+            <% }); %>
           <% } %>  
 
           <hr>
