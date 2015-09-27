@@ -17,6 +17,8 @@ var github = new GitHubApi({
     }
 });
 
+var repositories = []; // array to store all repo info
+
 /* routing function to get a user's repo */
 router.get('/', function(req, res) {
     var searchText = req.query.searchText;
@@ -33,6 +35,7 @@ router.get('/', function(req, res) {
             res.render('home', { message: "Could not find repository"});
         }
         else{
+            console.log(JSON.stringify(data));
             console.log("Callback was successfully made.")
             res.render('home', { repo: data });
         }
