@@ -1,3 +1,4 @@
+// Import Modules
 var GitHubApi = require("github"); // require git API
 var express = require('express'),
     router = express.Router(),
@@ -17,9 +18,10 @@ var github = new GitHubApi({
     }
 });
 
-// determine if repo is already stored
+// helper function to determine if repo is already stored
 function contains(array, repo){
     for( i = 0; i< array.length; i++){
+        // is repo name in the array
         if(array[i].name == repo){
             return true;
         }
@@ -40,8 +42,8 @@ router.get('/', function(req, res) {
         user: username,
         repo: repository
     }, function(err, data) {
+        // error with request
         if(err){
-            console.log("Error here");
             res.render('home', { message: "Could not find repository"});
         }
         else{
@@ -49,8 +51,6 @@ router.get('/', function(req, res) {
             if(!contains(repositories, data.name)){
                 repositories.push(data);
             }
-            console.log(JSON.stringify(repositories));
-            console.log("Callback was successfully made.")
             res.render('home', { repos: repositories });
         }
     });
