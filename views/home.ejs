@@ -66,14 +66,12 @@
 	<div class="container">
       <!-- Intro text -->
       <div class="row">
-        <div class="col-sm-12">
-          <p class="col-centered text-center" style="word-wrap: break-word;">  
-          <% if (typeof repo != 'undefined') {%>
-            <% include partials/repo %></p>
-          <% } %>
-
-          <hr>
-        </div>
+          <% if(typeof repos != 'undefined') { %>
+            <!-- render partial for each repo -->
+            <% repos.forEach(function(repo){ %>
+              <% include partials/repo %> 
+            <% }); %>
+          <% } %>  
       </div>
 
       <footer>
