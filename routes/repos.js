@@ -68,13 +68,13 @@ router.get('/', function(req, res) {
 
 /* routing function to get a user's repo */
 router.route('/:name').delete(function(req, res) {
-    console.log('got into here');
     // get repo to be deleted
     var repo = req.params.name;
+        console.log('got into here');
 
     if(contains(repositories, repo)){
         //remove repo once you've found it's index.
-        repositories.splice(index(repositories, repo));
+        repositories.splice(index(repositories, repo),1);
         res.render('home', { repos: repositories });
     }
 });
