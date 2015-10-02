@@ -18,6 +18,14 @@ var github = new GitHubApi({
     }
 });
 
+function index(array, repo){
+    for( i = 0; i< array.length; i++){
+        if(array[i].name == repo){
+            return i;
+        }
+    }
+}
+
 // helper function to determine if repo is already stored
 function contains(array, repo){
     for( i = 0; i< array.length; i++){
@@ -55,5 +63,18 @@ router.get('/', function(req, res) {
         }
     });
 });
+
+/* routing function to get a user's repo */
+router.route('/:name').delete(function(req, res) {
+    // get repo to be deleted
+    var repo = req.params.name;
+
+    if(contains(repositories, repo)){
+        //remove repo once you've found it's index.
+        repositories.splice(index(repositories, repo),1);
+        res.render('home', { repos: repositories });
+    }
+});
+
 
 module.exports = router;
