@@ -55,12 +55,10 @@ router.get('/', function(req, res) {
             res.render('home', { message: "Could not find repository"});
         }
         else{
-            console.log('regular get');
             // if not stored add it to the array
             if(!contains(repositories, data.name)){
                 repositories.push(data);
             }
-            console.log(JSON.stringify(repositories));
             res.render('home', { repos: repositories });
         }
     });
@@ -70,7 +68,6 @@ router.get('/', function(req, res) {
 router.route('/:name').delete(function(req, res) {
     // get repo to be deleted
     var repo = req.params.name;
-        console.log('got into here');
 
     if(contains(repositories, repo)){
         //remove repo once you've found it's index.
