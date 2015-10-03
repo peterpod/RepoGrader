@@ -38,6 +38,7 @@ function contains(array, repo){
 }
 
 var repositories = []; // array to store all repo info
+var reviews = {};
 
 /* routing function to get a user's repo */
 router.get('/', function(req, res) {
@@ -75,6 +76,39 @@ router.route('/:name').delete(function(req, res) {
         res.render('home', { repos: repositories });
     }
 });
+
+/* routing function to get a user's repo */
+router.route('/review/:user/:repo').get(function(req, res) {
+    // get repo to be deleted
+    var user = req.params.user;
+    var repo = req.params.repo;
+    console.log("got into REVIEWS");
+
+    res.render('review', { review: {'user': user, 'repo': repo} });
+});
+
+/* routing function to get a user's repo */
+router.post('/review/', function(req, res) {
+    // get repo to be deleted
+    console.log('got into put call');
+    var user = req.body.user;
+    var repo = req.body.repo;
+    var repoAddress = user + '/' + repo;
+    var review = req.body.review;
+
+    if(reviews[repoAddress] == undefined){
+        // initialize array of reviews if one does not exist
+        reviews[repoAddress] = [review];
+    }
+    else{
+        // push to array of reviews
+        reviews[repoAddress].push(review);
+    }
+
+    console.log(JSON.stringify(reviews));
+    res.render('home', { repos: repositories, 'reviews': reviews });
+});
+
 
 
 module.exports = router;

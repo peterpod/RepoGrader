@@ -13,6 +13,9 @@
 	    Watchers:  <%= repo.watchers_count %> <br/>
 	    Stars: <%= repo.stargazers_count %> <br/>
 	    Open Issues: <%= repo.open_issues_count %> <br/>
+	    <br>
+	    <a href='/repos/review/<%= repo.owner.login %>/<%= repo.name %>' class="btn btn-default" aria-label="Left Align">Add Review</a>
+	    <button class="btn btn-default" aria-label="Right Align">Load Reviews</button>
 	  </div>
 	</div>
 </div>

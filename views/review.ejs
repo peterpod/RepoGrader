@@ -14,7 +14,7 @@
 
   <!-- Latest compiled and minified JavaScript -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
 	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -35,35 +35,14 @@
       <div class="container">
         <br>
         <h1 class="col-centered text-center">Repo Grader</h1>
-        <br>
-        <!-- Search Bar -->
-        <div class="row">
-          <div class="col-lg-6 col-centered text-center">
-            <!-- Form for search bar -->
-            <form id="search" class="form-signin" action="/repos/" method= "GET" role="form">
-              <div class="input-group">
-                  <input id="searchText" name="searchText" type="text" class="form-control" placeholder='Search for a repository("user/repository")'>
-                  <span class="input-group-btn">
-                    <button class="btn btn-default" aria-hidden="true" type="submit">
-                      <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                    </button>
-                  </span>
-              </div><!-- /input-group -->
-            </form>
-          </div><!-- /.col-lg-6 -->
-        </div><!-- /.row -->
       </div>
     </div>
 
 	<div class="container">
-      <!-- Intro text -->
-      <p class="col-centered text-center">Github Analytics is a user-friendly application designed to help developers
-      decide which technologies to use when beginning development. We provide side-by-side
-      comparison of existing github repo's and make suggestions based on a set of simple
-      metrics.
-      </p>
-
-      <hr>
+      <!-- Review Form -->
+      <div class="row">
+          <% include partials/review %> 
+      </div>
 
       <footer>
         <p class="col-centered text-center">&copy; Innovation for Information Systems 2015</p>
