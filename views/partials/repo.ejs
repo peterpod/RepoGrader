@@ -14,10 +14,10 @@
 	    Stars: <%= repo.stargazers_count %> <br/>
 	    Open Issues: <%= repo.open_issues_count %> <br/>
 	    <br>
-	    <a href='/repos/review/<%= repo.owner.login %>/<%= repo.name %>' class="btn btn-default" aria-label="Left Align">Add Review</a>
+	    <a href='/repos/review/add/<%= repo.owner.login %>/<%= repo.name %>' class="btn btn-default" aria-label="Left Align">Add Review</a>
 	    <% var address = repo.owner.login+'/'+repo.name %>
 	    <% if( reviews[repo.owner.login+'/'+repo.name] != undefined ){ %>
-	    	<button class="btn btn-default" aria-label="Right Align">Load Reviews</button>
+	    	<a href='/repos/review/<%= repo.owner.login %>/<%= repo.name %>' class="btn btn-default" aria-label="Left Align">Load Reviews</a>
 	    <% } %> 
 	  </div>
 	</div>
