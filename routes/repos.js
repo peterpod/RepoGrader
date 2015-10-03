@@ -60,7 +60,7 @@ router.get('/', function(req, res) {
             if(!contains(repositories, data.name)){
                 repositories.push(data);
             }
-            res.render('home', { repos: repositories });
+            res.render('home', { repos: repositories, 'reviews': reviews});
         }
     });
 });
@@ -82,7 +82,6 @@ router.route('/review/:user/:repo').get(function(req, res) {
     // get repo to be deleted
     var user = req.params.user;
     var repo = req.params.repo;
-    console.log("got into REVIEWS");
 
     res.render('review', { review: {'user': user, 'repo': repo} });
 });
@@ -106,7 +105,7 @@ router.post('/review/', function(req, res) {
     }
 
     console.log(JSON.stringify(reviews));
-    res.render('home', { repos: repositories, 'reviews': reviews });
+    res.render('home', { repos: repositories, 'reviews': reviews});
 });
 
 
