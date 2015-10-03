@@ -81,7 +81,7 @@ router.route('/:name').delete(function(req, res) {
     if(contains(repositories, repo)){
         //remove repo once you've found it's index.
         repositories.splice(index(repositories, repo),1);
-        res.render('home', { repos: repositories });
+        res.render('home', { repos: repositories, 'reviews': reviews});
     }
 });
 
