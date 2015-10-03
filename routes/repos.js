@@ -38,12 +38,13 @@ function contains(array, repo){
 }
 
 var repositories = []; // array to store all repo info
-var reviews = {};
+var reviews = {}; //object to store reviews for repo's
 
 /* routing function to get a user's repo */
 router.get('/', function(req, res) {
-    console.log('QUERY'+ JSON.stringify(req.query));
+    // check to see if request was made with search bar
     if(Object.keys(req.query).length > 0){
+        // safe to do .split on searchText
         var searchText = req.query.searchText;
         var username = searchText.split('/')[0];
         var repository = searchText.split('/')[1];
@@ -66,12 +67,13 @@ router.get('/', function(req, res) {
             }
         });
     }
+    // no query string was used so we will just load the home page
     else{
         res.render('home', { repos: repositories, 'reviews': reviews});
     }
 });
 
-/* routing function to get a user's repo */
+/* routing function to delete a repo from the view */
 router.route('/:name').delete(function(req, res) {
     // get repo to be deleted
     var repo = req.params.name;
@@ -83,12 +85,13 @@ router.route('/:name').delete(function(req, res) {
     }
 });
 
-/* routing function to get a user's repo */
+/* routing function to add review for a repo */
 router.route('/review/add/:user/:repo').get(function(req, res) {
     // get repo to be deleted
     var user = req.params.user;
     var repo = req.params.repo;
 
+    // route to the addReview page
     res.render('addReview', { addReview: {'user': user, 'repo': repo} });
 });
 
@@ -99,15 +102,15 @@ router.route('/review/:user/:repo').get(function(req, res) {
     var repo = req.params.repo;
     var address = user + '/' + repo;
 
+    // array of reviews for a particular repo
     reviewsArray = reviews[address];
 
     res.render('review', { reviews: reviewsArray, 'user': user, 'repo': repo });
 });
 
-/* routing function to get a user's repo */
+/* routing function to add a review to a repo */
 router.post('/review/', function(req, res) {
     // get repo to be deleted
-    console.log('got into put call');
     var user = req.body.user;
     var repo = req.body.repo;
     var repoAddress = user + '/' + repo;
@@ -122,7 +125,7 @@ router.post('/review/', function(req, res) {
         reviews[repoAddress].push(review);
     }
 
-    console.log(JSON.stringify(reviews));
+    res.redirect('../../repos');
     res.render('home', { repos: repositories, 'reviews': reviews});
 });
 
