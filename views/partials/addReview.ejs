@@ -3,15 +3,15 @@
   <form role="form" method="POST" action="/repos/review/">
     <div class="form-group">
       <label for="User">User:</label>
-      <input class="form-control" name="user" placeholder="<%= addReview.user %>">
+      <input required="true"  class="form-control" name="user" placeholder="<%= addReview.user %>">
     </div>
     <div class="form-group">
       <label for="Repository">Repository:</label>
-      <input class="form-control" name="repo" placeholder="<%= addReview.repo %>">
+      <input required="true" class="form-control" name="repo" placeholder="<%= addReview.repo %>">
     </div>
     <div class="textbox">
       <label for="review">Review:</label>
-      <textarea class="form-control" name="review" rows="4"></textarea>
+      <textarea required="true" class="form-control" name="review" rows="4" placeholder="Write your review here"></textarea>
     </div>
     <br>
     <button type="submit" class="btn btn-default">Submit</button>
