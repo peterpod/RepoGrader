@@ -58,11 +58,6 @@ app.get('/home', function(req, res) {
     res.sendFile(__dirname + '/public/home.html');
 });
 
-/* Could be used for login functionality
-app.get('/signup', function(req, res) {
-    res.sendFile(__dirname + '/public/signup.html');
-});
-*/
 
 app.use('/repos', repos);
 
