@@ -103,7 +103,8 @@ router.route('/review/:user/:repo').get(function(req, res) {
     var address = user + '/' + repo;
 
     // array of reviews for a particular repo
-    reviewsArray = reviews[address];
+    reviewsArray = reviews[address].reviews;
+    console.log("reviewsArray" + JSON.stringify(reviewsArray));
 
     res.render('review', { reviews: reviewsArray, 'user': user, 'repo': repo });
 });
@@ -115,15 +116,21 @@ router.post('/review/', function(req, res) {
     var repo = req.body.repo;
     var repoAddress = user + '/' + repo;
     var review = req.body.review;
+    var username = req.body.username;
+    var date = req.body.date;
+    var subject = req.body.subject;
 
     if(reviews[repoAddress] == undefined){
         // initialize array of reviews if one does not exist
-        reviews[repoAddress] = [review];
+        reviews[repoAddress] = { reviews: [{"username": username, "subject":subject, "date":date, "review": review}]};
     }
     else{
         // push to array of reviews
-        reviews[repoAddress].push(review);
+        reviews[repoAddress].reviews.push({"username": username, "subject":subject, "date":date, "review": review});
+
     }
+
+    console.log('Reviews' + JSON.stringify(reviews));
 
     res.redirect('../../repos');
     res.render('home', { repos: repositories, 'reviews': reviews});

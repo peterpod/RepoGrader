@@ -75,12 +75,13 @@
           <h2><%= user %>/<%= repo%> Reviews</h2> 
             <div class="panel panel-default">
               <div class="panel-body">
-                <ul>
                 <!-- Just display all reviews -->
                   <% reviews.forEach(function(review){ %>
-                    <li><%= review %></li>
+                    <strong><%= review.subject %></strong>
+                    <p><%= review.review %></p>
+                    <p>By <%= review.username %> on <%= review.date %></p>
+                    <hr>
                   <% }); %>
-                </ul>
               </div>
              </div>
           </div>
