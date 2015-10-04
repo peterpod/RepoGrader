@@ -119,14 +119,15 @@ router.post('/review/', function(req, res) {
     var username = req.body.username;
     var date = req.body.date;
     var subject = req.body.subject;
+    var stars = req.body.star;
 
     if(reviews[repoAddress] == undefined){
         // initialize array of reviews if one does not exist
-        reviews[repoAddress] = { reviews: [{"username": username, "subject":subject, "date":date, "review": review}]};
+        reviews[repoAddress] = { reviews: [{"star": stars, "username": username, "subject":subject, "date":date, "review": review}]};
     }
     else{
         // push to array of reviews
-        reviews[repoAddress].reviews.push({"username": username, "subject":subject, "date":date, "review": review});
+        reviews[repoAddress].reviews.push({"star": stars, "username": username, "subject":subject, "date":date, "review": review});
 
     }
 

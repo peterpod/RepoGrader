@@ -3,10 +3,8 @@
 <head>
 	<title> Welcome to Github Analytics </title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
-  <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-  <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
   <!-- Latest compiled and minified CSS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
   <!-- Optional theme -->
@@ -14,6 +12,13 @@
 
   <!-- Latest compiled and minified JavaScript -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
+  <link href="../../../css/star-rating.css" media="all" rel="stylesheet" type="text/css" />
+
+  <script src="../../../js/star-rating.js" type="text/javascript"></script>
+
   <link rel="stylesheet" href="../../../css/style.css">
 </head>
 <body>
@@ -79,7 +84,8 @@
                   <% reviews.forEach(function(review){ %>
                     <strong><%= review.subject %></strong>
                     <p><%= review.review %></p>
-                    <p>By <%= review.username %> on <%= review.date %></p>
+                    <p>By <strong><%= review.username %></strong> on <%= review.date %></p>
+                    <input id="rating-system" type="number" name="star" class="rating" min="1" max="5" step="1" readonly="true" value="<%= review.star %>">
                     <hr>
                   <% }); %>
               </div>
@@ -92,11 +98,5 @@
         <p class="col-centered text-center">&copy; Innovation for Information Systems 2015</p>
       </footer>
   </div> <!-- /container -->
-
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   </body>
 </html>
