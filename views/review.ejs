@@ -80,11 +80,12 @@
           <h2><%= user %>/<%= repo%> Reviews</h2> 
             <div class="panel panel-default">
               <div class="panel-body">
-                <!-- Just display all reviews -->
+                  <!-- Just display all reviews -->
                   <% reviews.forEach(function(review){ %>
                     <strong><%= review.subject %></strong>
                     <p><%= review.review %></p>
                     <p>By <strong><%= review.username %></strong> on <%= review.date %></p>
+                    <!-- stars -->
                     <input id="rating-system" type="number" name="star" class="rating" min="1" max="5" step="1" readonly="true" value="<%= review.star %>">
                     <hr>
                   <% }); %>
