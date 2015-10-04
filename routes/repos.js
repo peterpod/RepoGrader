@@ -128,7 +128,6 @@ router.post('/review/', function(req, res) {
     }
 
     res.redirect('../../repos');
-    res.render('home', { repos: repositories, 'reviews': reviews});
 });
 
 
