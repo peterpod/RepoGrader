@@ -1,4 +1,3 @@
-// Import Modules
 var GitHubApi = require("github"); // require git API
 var express = require('express'),
     router = express.Router(),
@@ -18,6 +17,7 @@ var github = new GitHubApi({
     }
 });
 
+// helper function to get index of repo in repo array
 function index(array, repo){
     for( i = 0; i< array.length; i++){
         if(array[i].name == repo){
@@ -87,7 +87,6 @@ router.route('/:name').delete(function(req, res) {
 
 /* routing function to add review for a repo */
 router.route('/review/add/:user/:repo').get(function(req, res) {
-    // get repo to be deleted
     var user = req.params.user;
     var repo = req.params.repo;
 
@@ -97,36 +96,38 @@ router.route('/review/add/:user/:repo').get(function(req, res) {
 
 /* routing function to get a repo's reviews */
 router.route('/review/:user/:repo').get(function(req, res) {
-    // get repo to be deleted
     var user = req.params.user;
     var repo = req.params.repo;
     var address = user + '/' + repo;
 
     // array of reviews for a particular repo
-    reviewsArray = reviews[address];
+    reviewsArray = reviews[address].reviews;
 
     res.render('review', { reviews: reviewsArray, 'user': user, 'repo': repo });
 });
 
 /* routing function to add a review to a repo */
 router.post('/review/', function(req, res) {
-    // get repo to be deleted
     var user = req.body.user;
     var repo = req.body.repo;
     var repoAddress = user + '/' + repo;
     var review = req.body.review;
+    var username = req.body.username;
+    var date = req.body.date;
+    var subject = req.body.subject;
+    var stars = req.body.star;
 
     if(reviews[repoAddress] == undefined){
         // initialize array of reviews if one does not exist
-        reviews[repoAddress] = [review];
+        reviews[repoAddress] = { reviews: [{"star": stars, "username": username, "subject":subject, "date":date, "review": review}]};
     }
     else{
         // push to array of reviews
-        reviews[repoAddress].push(review);
+        reviews[repoAddress].reviews.push({"star": stars, "username": username, "subject":subject, "date":date, "review": review});
+
     }
 
     res.redirect('../../repos');
-    res.render('home', { repos: repositories, 'reviews': reviews});
 });
 
 

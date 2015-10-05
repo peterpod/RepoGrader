@@ -9,6 +9,18 @@
 				</button>
 			</form>
 		</h2>
+
+		<% if( Object.keys(reviews).length > 0) { %>
+			<% if( reviews[repo.owner.login+'/'+repo.name] != undefined ){ %>
+		        <% var total = 0; %>
+		        <% reviews[repo.owner.login+'/'+repo.name].reviews.forEach(function(rating){ %>
+		           <% total += parseInt(rating.star) %>
+		        <% }); %>
+		        <% var avgRating = total / reviews[repo.owner.login+'/'+repo.name].reviews.length %>
+		        <strong>Average Rating</strong> <input id="rating-system" type="number" name="star" class="rating" min="1" max="5" step="1" readonly="true" value="<%= avgRating %>">
+		    <% } %>    
+	    <% } %>   
+
 	    <p><%= repo.description %> </p>
 	    Watchers:  <%= repo.watchers_count %> <br/>
 	    Stars: <%= repo.stargazers_count %> <br/>
