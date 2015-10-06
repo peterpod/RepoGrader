@@ -47,7 +47,7 @@ function extend(a, b){
 function dataComplete(repoID){
     var i = index(repositories, repoID);
     //presence of html_url checks for repo "get"
-    if (repositories[i].html_url!=null && repositories[i].commitActivity!=null){
+    if (repositories[i].html_url!=null && repositories[i].commitActivity!=null && repositories[i].participation!=null){
         return true;
     }
     return false;
@@ -108,14 +108,39 @@ router.get('/', function(req, res) {
                     repositories.push(r);
                 } else {
                     var i = index(repositories, username+"/"+repository)
-                    extend(repositories[i],data);
+                    commitActivity = {commitActivity: data}
+                    extend(repositories[i],commitActivity);
                 }
                 if (dataComplete(username+"/"+repository)){
                     res.render('home', { repos: repositories, 'reviews': reviews});
                 }
             }
+        });
 
-
+        github.repos.getStatsParticipation({
+            user: username,
+            repo: repository
+        }, function(err, data) {
+            // error with request
+            if(err){
+                res.render('home', { message: "Could not find repository"});
+            }
+            else{
+                // if not stored add it to the array
+                if(!contains(repositories, username+"/"+repository)){
+                    r = {repoID: username+"/"+repository}
+                    participation = {participation: data}
+                    extend(r,participation)
+                    repositories.push(r);
+                } else {
+                    var i = index(repositories, username+"/"+repository)
+                    participation = {participation: data}
+                    extend(repositories[i],participation);
+                }
+                if (dataComplete(username+"/"+repository)){
+                    res.render('home', { repos: repositories, 'reviews': reviews});
+                }
+            }
         });
     }
     // no query string was used so we will just load the home page
