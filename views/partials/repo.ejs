@@ -35,8 +35,9 @@
 	    <br>	    
 	    Commit Activity: <strong> <%= JSON.stringify(repo.commitActivity) %> </strong><br/>
 	    <br>
-
 	    Participation: <strong> <%= JSON.stringify(repo.participation) %> </strong><br/>
+	    <br>
+	    Contributor List: <strong> <%= JSON.stringify(repo.contributorList) %> </strong><br/>
 	    <br>
 	    <a href='/repos/review/add/<%= repo.owner.login %>/<%= repo.name %>' class="btn btn-default" aria-label="Left Align">Add Review</a>
 	    <% var address = repo.owner.login+'/'+repo.name %>

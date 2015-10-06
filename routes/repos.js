@@ -37,6 +37,7 @@ function contains(array, repo){
     return false;
 }
 
+//merges json arrays. used to stitch JSON responses from each get request together
 function extend(a, b){
     for(var key in b)
         if(b.hasOwnProperty(key))
@@ -44,10 +45,12 @@ function extend(a, b){
     return a;
  }
 
+//checks to see if all requests have been completed by looking for specific fields
+//called before rendering view 
 function dataComplete(repoID){
     var i = index(repositories, repoID);
     //presence of html_url checks for repo "get"
-    if (repositories[i].html_url!=null && repositories[i].commitActivity!=null && repositories[i].participation!=null){
+    if (repositories[i].html_url!=null && repositories[i].commitActivity!=null && repositories[i].participation!=null && repositories[i].contributorList!=null){
         return true;
     }
     return false;
@@ -136,6 +139,34 @@ router.get('/', function(req, res) {
                     var i = index(repositories, username+"/"+repository)
                     participation = {participation: data}
                     extend(repositories[i],participation);
+                }
+                if (dataComplete(username+"/"+repository)){
+                    res.render('home', { repos: repositories, 'reviews': reviews});
+                }
+            }
+        });
+
+        //should use this request to get the number of commits since there is no direct way to get that
+        //sum commit count for each contributor
+        github.repos.getContributors({
+            user: username,
+            repo: repository
+        }, function(err, data) {
+            // error with request
+            if(err){
+                res.render('home', { message: "Could not find repository"});
+            }
+            else{
+                // if not stored add it to the array
+                if(!contains(repositories, username+"/"+repository)){
+                    r = {repoID: username+"/"+repository}
+                    contributorList = {contributorList: data}
+                    extend(r,contributorList)
+                    repositories.push(r);
+                } else {
+                    var i = index(repositories, username+"/"+repository)
+                    contributorList = {contributorList: data}
+                    extend(repositories[i],contributorList);
                 }
                 if (dataComplete(username+"/"+repository)){
                     res.render('home', { repos: repositories, 'reviews': reviews});
