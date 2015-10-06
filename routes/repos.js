@@ -181,11 +181,12 @@ router.get('/', function(req, res) {
 });
 
 /* routing function to delete a repo from the view */
-router.route('/:name').delete(function(req, res) {
+router.route('/:user/:repo').delete(function(req, res) {
     // get repo to be deleted
-    var repo = req.params.name;
+    var user = req.params.user;
+    var repo = req.params.repo;
 
-    if(contains(repositories, repo)){
+    if(contains(repositories, user+"/"+repo)){
         //remove repo once you've found it's index.
         repositories.splice(index(repositories, repo),1);
         res.render('home', { repos: repositories, 'reviews': reviews});
