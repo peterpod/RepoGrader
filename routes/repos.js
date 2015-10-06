@@ -49,8 +49,11 @@ function extend(a, b){
 //called before rendering view 
 function dataComplete(repoID){
     var i = index(repositories, repoID);
-    //presence of html_url checks for repo "get"
-    if (repositories[i].html_url!=null && repositories[i].commitActivity!=null && repositories[i].participation!=null && repositories[i].contributorList!=null){
+    for (var ind = 0; ind < repositories.length; ind++) {
+        console.log(Object.keys(repositories[ind]));
+    }
+    //Check if each of the requests have been returned
+    if (repositories[i].getInfo!=null && repositories[i].commitActivity!=null && repositories[i].participation!=null && repositories[i].contributorList!=null){
         return true;
     }
     return false;
@@ -79,20 +82,24 @@ router.get('/', function(req, res) {
             }
             else{
                 // if not stored add it to the array
-                if(!contains(repositories, data.full_name)){
+                if(!contains(repositories, username+"/"+repository)){
                     r = {repoID: username+"/"+repository}
-                    extend(r,data)
+                    getInfo = {getInfo: data};
+                    extend(r,getInfo);
                     repositories.push(r);
+                    console.log("NEW REPO "+ repository +" getInfo")
                 } else {
                     var i = index(repositories, username+"/"+repository)
-                    extend(repositories[i],data);
+                    getInfo = {getInfo: data};
+                    extend(repositories[i],getInfo);
+                    console.log("ADDED getInfo info for REPO "+ repository)
                 }
-                //If all requests have been completed
                 if (dataComplete(username+"/"+repository)){
                     res.render('home', { repos: repositories, 'reviews': reviews});
                 }
             }
         });
+
 
         github.repos.getStatsCommitActivity({
             user: username,
@@ -106,13 +113,15 @@ router.get('/', function(req, res) {
                 // if not stored add it to the array
                 if(!contains(repositories, username+"/"+repository)){
                     r = {repoID: username+"/"+repository}
-                    commitActivity = {commitActivity: data}
-                    extend(r,commitActivity)
+                    commitActivity = {commitActivity: data};
+                    extend(r,commitActivity);
                     repositories.push(r);
+                    console.log("NEW REPO "+ repository +" commitActivity")
                 } else {
                     var i = index(repositories, username+"/"+repository)
-                    commitActivity = {commitActivity: data}
+                    commitActivity = {commitActivity: data};
                     extend(repositories[i],commitActivity);
+                    console.log("ADDED commitActivity info for REPO "+ repository)
                 }
                 if (dataComplete(username+"/"+repository)){
                     res.render('home', { repos: repositories, 'reviews': reviews});
@@ -131,14 +140,16 @@ router.get('/', function(req, res) {
             else{
                 // if not stored add it to the array
                 if(!contains(repositories, username+"/"+repository)){
-                    r = {repoID: username+"/"+repository}
-                    participation = {participation: data}
-                    extend(r,participation)
+                    r = {repoID: username+"/"+repository};
+                    participation = {participation: data};
+                    extend(r,participation);
                     repositories.push(r);
+                    console.log("NEW REPO "+ repository +" participation")
                 } else {
                     var i = index(repositories, username+"/"+repository)
-                    participation = {participation: data}
+                    participation = {participation: data};
                     extend(repositories[i],participation);
+                    console.log("ADDED participation info for REPO " + repository)
                 }
                 if (dataComplete(username+"/"+repository)){
                     res.render('home', { repos: repositories, 'reviews': reviews});
@@ -159,14 +170,16 @@ router.get('/', function(req, res) {
             else{
                 // if not stored add it to the array
                 if(!contains(repositories, username+"/"+repository)){
-                    r = {repoID: username+"/"+repository}
-                    contributorList = {contributorList: data}
-                    extend(r,contributorList)
+                    r = {repoID: username+"/"+repository};
+                    contributorList = {contributorList: data};
+                    extend(r,contributorList);
                     repositories.push(r);
+                    console.log("NEW REPO "+ repository +" contributorList")
                 } else {
                     var i = index(repositories, username+"/"+repository)
-                    contributorList = {contributorList: data}
+                    contributorList = {contributorList: data};
                     extend(repositories[i],contributorList);
+                    console.log("ADDED contributorList info for REPO " + repository)
                 }
                 if (dataComplete(username+"/"+repository)){
                     res.render('home', { repos: repositories, 'reviews': reviews});
