@@ -39,7 +39,7 @@
 	    <br>
 	    Contributor List: <strong> <%= JSON.stringify(repo.contributorList) %> </strong><br/>
 	    <br>
-	    <a href='/repos/review/add/<%= repo.getInfo.owner.login %>/<%= repo.name %>' class="btn btn-default" aria-label="Left Align">Add Review</a>
+	    <a href='/repos/review/add/<%= repo.getInfo.owner.login %>/<%= repo.getInfo.name %>' class="btn btn-default" aria-label="Left Align">Add Review</a>
 	    <% var address = repo.getInfo.owner.login+'/'+repo.name %>
 	    <% if( reviews[repo.getInfo.owner.login+'/'+repo.name] != undefined ){ %>
 	    	<a href='/repos/review/<%= repo.getInfo.owner.login %>/<%= repo.name %>' class="btn btn-default" aria-label="Left Align">Load Reviews</a>
