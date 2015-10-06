@@ -20,7 +20,7 @@ var github = new GitHubApi({
 // helper function to get index of repo in repo array
 function index(array, repo){
     for( i = 0; i< array.length; i++){
-        if(array[i].name == repo){
+        if(array[i].repoID == repo){
             return i;
         }
     }
@@ -30,12 +30,28 @@ function index(array, repo){
 function contains(array, repo){
     for( i = 0; i< array.length; i++){
         // is repo name in the array
-        if(array[i].name == repo){
+        if(array[i].repoID == repo){
             return true;
         }
     }
     return false;
 }
+
+function extend(a, b){
+    for(var key in b)
+        if(b.hasOwnProperty(key))
+            a[key] = b[key];
+    return a;
+ }
+
+function dataComplete(repoID){
+    var i = index(repositories, repoID);
+    //presence of html_url checks for repo "get"
+    if (repositories[i].html_url!=null && repositories[i].commitActivity!=null){
+        return true;
+    }
+    return false;
+ }
 
 var repositories = []; // array to store all repo info
 var reviews = {}; //object to store reviews for repo's
@@ -60,11 +76,46 @@ router.get('/', function(req, res) {
             }
             else{
                 // if not stored add it to the array
-                if(!contains(repositories, data.name)){
-                    repositories.push(data);
+                if(!contains(repositories, data.full_name)){
+                    r = {repoID: username+"/"+repository}
+                    extend(r,data)
+                    repositories.push(r);
+                } else {
+                    var i = index(repositories, username+"/"+repository)
+                    extend(repositories[i],data);
                 }
-                res.render('home', { repos: repositories, 'reviews': reviews});
+                //If all requests have been completed
+                if (dataComplete(username+"/"+repository)){
+                    res.render('home', { repos: repositories, 'reviews': reviews});
+                }
             }
+        });
+
+        github.repos.getStatsCommitActivity({
+            user: username,
+            repo: repository
+        }, function(err, data) {
+            // error with request
+            if(err){
+                res.render('home', { message: "Could not find repository"});
+            }
+            else{
+                // if not stored add it to the array
+                if(!contains(repositories, username+"/"+repository)){
+                    r = {repoID: username+"/"+repository}
+                    commitActivity = {commitActivity: data}
+                    extend(r,commitActivity)
+                    repositories.push(r);
+                } else {
+                    var i = index(repositories, username+"/"+repository)
+                    extend(repositories[i],data);
+                }
+                if (dataComplete(username+"/"+repository)){
+                    res.render('home', { repos: repositories, 'reviews': reviews});
+                }
+            }
+
+
         });
     }
     // no query string was used so we will just load the home page

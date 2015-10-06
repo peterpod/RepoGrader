@@ -1,5 +1,5 @@
 {
-  "name": "minihack",
+  "name": "RepoGrader",
   "version": "1.0.0",
   "description": "Application to compare github repositories.",
   "main": "app.js",

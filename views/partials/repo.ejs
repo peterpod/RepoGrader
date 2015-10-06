@@ -22,9 +22,15 @@
 	    <% } %>   
 
 	    <p><%= repo.description %> </p>
-	    Watchers:  <%= repo.watchers_count %> <br/>
-	    Stars: <%= repo.stargazers_count %> <br/>
-	    Open Issues: <%= repo.open_issues_count %> <br/>
+	    Watchers: <strong>  <%= repo.watchers_count %> </strong> <br/>
+	    Stars: <strong> <%= repo.stargazers_count %> </strong><br/>
+	    # of Forks: <strong> <%= repo.forks_count %> </strong><br/>
+	    <br/>
+	    Open Issues: <strong> <%= repo.open_issues_count %> </strong><br/>
+	    <br/>
+	    Primary Language: <strong> <%= repo.language %> </strong><br/>
+	    <br>	    
+	    Commit Activity: <strong> <%= JSON.stringify(repo.commitActivity) %> </strong><br/>
 	    <br>
 	    <a href='/repos/review/add/<%= repo.owner.login %>/<%= repo.name %>' class="btn btn-default" aria-label="Left Align">Add Review</a>
 	    <% var address = repo.owner.login+'/'+repo.name %>
