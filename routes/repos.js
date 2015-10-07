@@ -17,12 +17,6 @@ var github = new GitHubApi({
     }
 });
 
-github.authenticate({
-    type: "basic",
-    username: 'peterpod',
-    password: 'Darktree94!'
-});
-
 // helper function to get index of repo in repo array
 function index(array, repo){
     for( i = 0; i< array.length; i++){
