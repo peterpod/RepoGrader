@@ -254,6 +254,8 @@ router.post('/review/', function(req, res) {
 
     }
 
+    console.log(JSON.stringify(reviews));
+
     res.redirect('../../repos');
 });
 

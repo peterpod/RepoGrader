@@ -11,12 +11,12 @@
 		</h2>
 
 		<% if( Object.keys(reviews).length > 0) { %>
-			<% if( reviews[repo.getInfo.owner.login+'/'+repo.getInfo.name] != undefined ){ %>
+			<% if( reviews[repo.getInfo.owner.login+'/'+repo.getInfo.name.toLowerCase()] != undefined ){ %>
 		        <% var total = 0; %>
-		        <% reviews[repo.getInfo.owner.login+'/'+repo.getInfo.name].reviews.forEach(function(rating){ %>
+		        <% reviews[repo.getInfo.owner.login+'/'+repo.getInfo.name.toLowerCase()].reviews.forEach(function(rating){ %>
 		           <% total += parseInt(rating.star) %>
 		        <% }); %>
-		        <% var avgRating = total / reviews[repo.getInfo.owner.login+'/'+repo.getInfo.name].reviews.length %>
+		        <% var avgRating = total / reviews[repo.getInfo.owner.login+'/'+repo.getInfo.name.toLowerCase()].reviews.length %>
 		        <strong>Average Rating</strong> <input id="rating-system" type="number" name="star" class="rating" min="1" max="5" step="1" readonly="true" value="<%= avgRating %>">
 		    <% } %>    
 	    <% } %>   
@@ -41,8 +41,8 @@
 	    <br>
 	    <a href='/repos/review/add/<%= repo.getInfo.owner.login %>/<%= repo.getInfo.name %>' class="btn btn-default" aria-label="Left Align">Add Review</a>
 	    <% var address = repo.getInfo.owner.login+'/'+repo.name %>
-	    <% if( reviews[repo.getInfo.owner.login+'/'+repo.name] != undefined ){ %>
-	    	<a href='/repos/review/<%= repo.getInfo.owner.login %>/<%= repo.name %>' class="btn btn-default" aria-label="Left Align">Load Reviews</a>
+	    <% if( reviews[repo.getInfo.owner.login+'/'+repo.getInfo.name.toLowerCase()] != undefined ){ %>
+	    	<a href='/repos/review/<%= repo.getInfo.owner.login %>/<%= repo.getInfo.name %>' class="btn btn-default" aria-label="Left Align">Load Reviews</a>
 	    <% } %> 
 	  </div>
 	</div>
