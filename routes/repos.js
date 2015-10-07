@@ -20,7 +20,7 @@ var github = new GitHubApi({
 // helper function to get index of repo in repo array
 function index(array, repo){
     for( i = 0; i< array.length; i++){
-        if(array[i].name == repo){
+        if(array[i].repoID == repo){
             return i;
         }
     }
@@ -30,12 +30,34 @@ function index(array, repo){
 function contains(array, repo){
     for( i = 0; i< array.length; i++){
         // is repo name in the array
-        if(array[i].name == repo){
+        if(array[i].repoID == repo){
             return true;
         }
     }
     return false;
 }
+
+//merges json arrays. used to stitch JSON responses from each get request together
+function extend(a, b){
+    for(var key in b)
+        if(b.hasOwnProperty(key))
+            a[key] = b[key];
+    return a;
+ }
+
+//checks to see if all requests have been completed by looking for specific fields
+//called before rendering view 
+function dataComplete(repoID){
+    var i = index(repositories, repoID);
+    for (var ind = 0; ind < repositories.length; ind++) {
+        console.log(Object.keys(repositories[ind]));
+    }
+    //Check if each of the requests have been returned
+    if (repositories[i].getInfo!=null && repositories[i].commitActivity!=null && repositories[i].participation!=null && repositories[i].contributorList!=null){
+        return true;
+    }
+    return false;
+ }
 
 var repositories = []; // array to store all repo info
 var reviews = {}; //object to store reviews for repo's
@@ -54,16 +76,118 @@ router.get('/', function(req, res) {
             user: username,
             repo: repository
         }, function(err, data) {
+            var repoID = (username+"/"+repository).toLowerCase();
             // error with request
             if(err){
                 res.render('home', { message: "Could not find repository"});
             }
             else{
                 // if not stored add it to the array
-                if(!contains(repositories, data.name)){
-                    repositories.push(data);
+                if(!contains(repositories, repoID)){
+                    r = {repoID: repoID}
+                    getInfo = {getInfo: data};
+                    extend(r,getInfo);
+                    repositories.push(r);
+                    console.log("NEW REPO "+ repository +" getInfo")
+                } else {
+                    var i = index(repositories, repoID)
+                    getInfo = {getInfo: data};
+                    extend(repositories[i],getInfo);
+                    console.log("ADDED getInfo info for REPO "+ repository)
                 }
-                res.render('home', { repos: repositories, 'reviews': reviews});
+                if (dataComplete(repoID)){
+                    res.render('home', { repos: repositories, 'reviews': reviews});
+                }
+            }
+        });
+
+
+        github.repos.getStatsCommitActivity({
+            user: username,
+            repo: repository
+        }, function(err, data) {
+            var repoID = (username+"/"+repository).toLowerCase();
+            // error with request
+            if(err){
+                res.render('home', { message: "Could not find repository"});
+            }
+            else{
+                // if not stored add it to the array
+                if(!contains(repositories, repoID)){
+                    r = {repoID: repoID}
+                    commitActivity = {commitActivity: data};
+                    extend(r,commitActivity);
+                    repositories.push(r);
+                    console.log("NEW REPO "+ repository +" commitActivity")
+                } else {
+                    var i = index(repositories, repoID)
+                    commitActivity = {commitActivity: data};
+                    extend(repositories[i],commitActivity);
+                    console.log("ADDED commitActivity info for REPO "+ repository)
+                }
+                if (dataComplete(repoID)){
+                    res.render('home', { repos: repositories, 'reviews': reviews});
+                }
+            }
+        });
+
+        github.repos.getStatsParticipation({
+            user: username,
+            repo: repository
+        }, function(err, data) {
+            var repoID = (username+"/"+repository).toLowerCase();
+            // error with request
+            if(err){
+                res.render('home', { message: "Could not find repository"});
+            }
+            else{
+                // if not stored add it to the array
+                if(!contains(repositories, repoID)){
+                    r = {repoID: repoID};
+                    participation = {participation: data};
+                    extend(r,participation);
+                    repositories.push(r);
+                    console.log("NEW REPO "+ repository +" participation")
+                } else {
+                    var i = index(repositories, repoID)
+                    participation = {participation: data};
+                    extend(repositories[i],participation);
+                    console.log("ADDED participation info for REPO " + repository)
+                }
+                if (dataComplete(repoID)){
+                    res.render('home', { repos: repositories, 'reviews': reviews});
+                }
+            }
+        });
+
+        //should use this request to get the number of commits since there is no direct way to get that
+        //sum commit count for each contributor
+        github.repos.getContributors({
+            user: username,
+            repo: repository
+        }, function(err, data) {
+            var repoID = (username+"/"+repository).toLowerCase();
+            // error with request
+            if(err){
+                res.render('home', { message: "Could not find repository"});
+            }
+            else{
+                // if not stored add it to the array
+                if(!contains(repositories, repoID)){
+                    r = {repoID: repoID};
+                    contributorList = {contributorList: data};
+                    extend(r,contributorList);
+                    repositories.push(r);
+                    console.log("NEW REPO "+ repository +" contributorList")
+                } else {
+                    var i = index(repositories, repoID)
+                    contributorList = {contributorList: data};
+                    extend(repositories[i],contributorList);
+                    console.log("ADDED contributorList info for REPO " + repository)
+                }
+                if (dataComplete(repoID)){
+                    res.render('home', { repos: repositories, 'reviews': reviews});
+                }
             }
         });
     }
@@ -74,13 +198,16 @@ router.get('/', function(req, res) {
 });
 
 /* routing function to delete a repo from the view */
-router.route('/:name').delete(function(req, res) {
+router.route('/:user/:repo').delete(function(req, res) {
     // get repo to be deleted
-    var repo = req.params.name;
-
-    if(contains(repositories, repo)){
+    var user = req.params.user;
+    var repo = req.params.repo;
+    var repoID = (user+"/"+repo).toLowerCase();
+    console.log('HI TRYING TO DELETE SOMETHING', repoID)
+    if(contains(repositories, repoID)){
+        console.log("found it ;)")
         //remove repo once you've found it's index.
-        repositories.splice(index(repositories, repo),1);
+        repositories.splice(index(repositories, repoID),1);
         res.render('home', { repos: repositories, 'reviews': reviews});
     }
 });
@@ -98,7 +225,7 @@ router.route('/review/add/:user/:repo').get(function(req, res) {
 router.route('/review/:user/:repo').get(function(req, res) {
     var user = req.params.user;
     var repo = req.params.repo;
-    var address = user + '/' + repo;
+    var address = (user + '/' + repo).toLowerCase();
 
     // array of reviews for a particular repo
     reviewsArray = reviews[address].reviews;
@@ -108,12 +235,12 @@ router.route('/review/:user/:repo').get(function(req, res) {
 
 /* routing function to add a review to a repo */
 router.post('/review/', function(req, res) {
-    var user = req.body.user;
+    var user = req.body.user;    var date = req.body.date;
+
     var repo = req.body.repo;
-    var repoAddress = user + '/' + repo;
+    var repoAddress = (user + '/' + repo).toLowerCase();
     var review = req.body.review;
     var username = req.body.username;
-    var date = req.body.date;
     var subject = req.body.subject;
     var stars = req.body.star;
 
@@ -126,6 +253,8 @@ router.post('/review/', function(req, res) {
         reviews[repoAddress].reviews.push({"star": stars, "username": username, "subject":subject, "date":date, "review": review});
 
     }
+
+    console.log(JSON.stringify(reviews));
 
     res.redirect('../../repos');
 });

@@ -1,8 +1,8 @@
 <div class="col-sm-6">
 	<div class="panel panel-default">
 	  <div class="panel-body">
-	    <h2><a href='<%= repo.owner.html_url%>'><%= repo.owner.login %> </a> / <a href='<%= repo.html_url %>'><%= repo.name %> </a>
-		    <form action="/repos/<%= repo.name %>" method="post" enctype='application/x-www-form-urlencoded'>
+	    <h2><a href='<%= repo.getInfo.owner.html_url%>'><%= repo.getInfo.owner.login %> </a> / <a href='<%= repo.getInfo.html_url %>'><%= repo.getInfo.name %> </a>
+		    <form action="/repos/<%= repo.getInfo.owner.login %>/<%= repo.getInfo.name %>" method="post" enctype='application/x-www-form-urlencoded'>
 		    	<input type="hidden" name="_method" value="delete"/>
 			    <button type="submit" class="btn btn-default" aria-label="Right Align" style="float:right;">
 				  <span class="glyphicon glyphicon-remove align-right" aria-hidden="true"></span>
@@ -11,25 +11,38 @@
 		</h2>
 
 		<% if( Object.keys(reviews).length > 0) { %>
-			<% if( reviews[repo.owner.login+'/'+repo.name] != undefined ){ %>
+			<% if( reviews[repo.getInfo.owner.login+'/'+repo.getInfo.name.toLowerCase()] != undefined ){ %>
 		        <% var total = 0; %>
-		        <% reviews[repo.owner.login+'/'+repo.name].reviews.forEach(function(rating){ %>
+		        <% reviews[repo.getInfo.owner.login+'/'+repo.getInfo.name.toLowerCase()].reviews.forEach(function(rating){ %>
 		           <% total += parseInt(rating.star) %>
 		        <% }); %>
-		        <% var avgRating = total / reviews[repo.owner.login+'/'+repo.name].reviews.length %>
+		        <% var avgRating = total / reviews[repo.getInfo.owner.login+'/'+repo.getInfo.name.toLowerCase()].reviews.length %>
 		        <strong>Average Rating</strong> <input id="rating-system" type="number" name="star" class="rating" min="1" max="5" step="1" readonly="true" value="<%= avgRating %>">
 		    <% } %>    
 	    <% } %>   
 
-	    <p><%= repo.description %> </p>
-	    Watchers:  <%= repo.watchers_count %> <br/>
-	    Stars: <%= repo.stargazers_count %> <br/>
-	    Open Issues: <%= repo.open_issues_count %> <br/>
+	    <p><%= repo.getInfo.description %> </p>
+	    Watchers: <strong>  <%= repo.getInfo.watchers_count %> </strong> <br/>
+	    Stars: <strong> <%= repo.getInfo.stargazers_count %> </strong><br/>	
+	    # of Forks: <strong> <%= repo.getInfo.forks_count %> </strong><br/>
+	    <br/>
+	    Open Issues: <strong> <%= repo.getInfo.open_issues_count %> </strong><br/>
+	    <br/>
+	   	Last Updated: <strong> <%= repo.getInfo.updated_at %> </strong><br/>
+	    <br/>
+	    
+	    Primary Language: <strong> <%= repo.getInfo.language %> </strong><br/>
+	    <br>	    
+	    Commit Activity: <strong> <%= JSON.stringify(repo.commitActivity) %> </strong><br/>
 	    <br>
-	    <a href='/repos/review/add/<%= repo.owner.login %>/<%= repo.name %>' class="btn btn-default" aria-label="Left Align">Add Review</a>
-	    <% var address = repo.owner.login+'/'+repo.name %>
-	    <% if( reviews[repo.owner.login+'/'+repo.name] != undefined ){ %>
-	    	<a href='/repos/review/<%= repo.owner.login %>/<%= repo.name %>' class="btn btn-default" aria-label="Left Align">Load Reviews</a>
+	    Participation: <strong> <%= JSON.stringify(repo.participation) %> </strong><br/>
+	    <br>
+	    Contributor List: <strong> <%= JSON.stringify(repo.contributorList) %> </strong><br/>
+	    <br>
+	    <a href='/repos/review/add/<%= repo.getInfo.owner.login %>/<%= repo.getInfo.name %>' class="btn btn-default" aria-label="Left Align">Add Review</a>
+	    <% var address = repo.getInfo.owner.login+'/'+repo.name %>
+	    <% if( reviews[repo.getInfo.owner.login+'/'+repo.getInfo.name.toLowerCase()] != undefined ){ %>
+	    	<a href='/repos/review/<%= repo.getInfo.owner.login %>/<%= repo.getInfo.name %>' class="btn btn-default" aria-label="Left Align">Load Reviews</a>
 	    <% } %> 
 	  </div>
 	</div>
