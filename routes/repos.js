@@ -17,6 +17,15 @@ var github = new GitHubApi({
     }
 });
 
+github.authenticate({
+    type: "basic",
+    username: 'peterpod',
+    password: 'darktree94'
+});
+
+var plotly = require('plotly')('peterpod','e876efj98k');
+var fs = require('fs');
+
 // helper function to get index of repo in repo array
 function index(array, repo){
     for( i = 0; i< array.length; i++){
@@ -44,6 +53,22 @@ function extend(a, b){
             a[key] = b[key];
     return a;
  }
+
+ function addToRepositories( repositories , repoID, data){
+    r = {repoID: repoID}
+    commitActivity = {commitActivity: data};
+    extend(r,commitActivity);
+    repositories.push(r);
+    console.log("NEW REPO "+ repository +" commitActivity");
+ }
+
+ function pushToRepositories( repositories , repoID, data){
+    var i = index(repositories, repoID)
+    getInfo = {getInfo: data};
+    extend(repositories[i],getInfo);
+    console.log("ADDED getInfo info for REPO "+ repository);
+ }
+
 
 //checks to see if all requests have been completed by looking for specific fields
 //called before rendering view 
@@ -84,16 +109,10 @@ router.get('/', function(req, res) {
             else{
                 // if not stored add it to the array
                 if(!contains(repositories, repoID)){
-                    r = {repoID: repoID}
-                    getInfo = {getInfo: data};
-                    extend(r,getInfo);
-                    repositories.push(r);
-                    console.log("NEW REPO "+ repository +" getInfo")
+                    addToRepositories( repositories , repoID, data);
                 } else {
-                    var i = index(repositories, repoID)
-                    getInfo = {getInfo: data};
-                    extend(repositories[i],getInfo);
-                    console.log("ADDED getInfo info for REPO "+ repository)
+                    pushToRepositories( repositories , repoID, data);
+                    console.log("ADDED getinfo for REPO " + repository);
                 }
                 if (dataComplete(repoID)){
                     res.render('home', { repos: repositories, 'reviews': reviews});
@@ -114,16 +133,10 @@ router.get('/', function(req, res) {
             else{
                 // if not stored add it to the array
                 if(!contains(repositories, repoID)){
-                    r = {repoID: repoID}
-                    commitActivity = {commitActivity: data};
-                    extend(r,commitActivity);
-                    repositories.push(r);
-                    console.log("NEW REPO "+ repository +" commitActivity")
+                    addToRepositories( repositories , repoID, data);
                 } else {
-                    var i = index(repositories, repoID)
-                    commitActivity = {commitActivity: data};
-                    extend(repositories[i],commitActivity);
-                    console.log("ADDED commitActivity info for REPO "+ repository)
+                    pushToRepositories( repositories , repoID, data);
+                    console.log("ADDED commitActivity info for REPO " + repository);
                 }
                 if (dataComplete(repoID)){
                     res.render('home', { repos: repositories, 'reviews': reviews});
@@ -143,16 +156,10 @@ router.get('/', function(req, res) {
             else{
                 // if not stored add it to the array
                 if(!contains(repositories, repoID)){
-                    r = {repoID: repoID};
-                    participation = {participation: data};
-                    extend(r,participation);
-                    repositories.push(r);
-                    console.log("NEW REPO "+ repository +" participation")
+                    addToRepositories( repositories , repoID, data);
                 } else {
-                    var i = index(repositories, repoID)
-                    participation = {participation: data};
-                    extend(repositories[i],participation);
-                    console.log("ADDED participation info for REPO " + repository)
+                    pushToRepositories( repositories , repoID, data);
+                    console.log("ADDED participationList for REPO " + repository);
                 }
                 if (dataComplete(repoID)){
                     res.render('home', { repos: repositories, 'reviews': reviews});
@@ -174,16 +181,10 @@ router.get('/', function(req, res) {
             else{
                 // if not stored add it to the array
                 if(!contains(repositories, repoID)){
-                    r = {repoID: repoID};
-                    contributorList = {contributorList: data};
-                    extend(r,contributorList);
-                    repositories.push(r);
-                    console.log("NEW REPO "+ repository +" contributorList")
+                    addToRepositories( repositories , repoID, data);
                 } else {
-                    var i = index(repositories, repoID)
-                    contributorList = {contributorList: data};
-                    extend(repositories[i],contributorList);
-                    console.log("ADDED contributorList info for REPO " + repository)
+                    pushToRepositories( repositories , repoID, data);
+                    console.log("ADDED contributorList for REPO " + repository);
                 }
                 if (dataComplete(repoID)){
                     res.render('home', { repos: repositories, 'reviews': reviews});
