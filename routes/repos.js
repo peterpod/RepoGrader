@@ -17,12 +17,6 @@ var github = new GitHubApi({
     }
 });
 
-github.authenticate({
-    type: "basic",
-    username: 'peterpod',
-    password: 'darktree94'
-});
-
 var plotly = require('plotly')('peterpod','e876efj98k');
 var fs = require('fs');
 
@@ -122,7 +116,6 @@ router.get('/', function(req, res) {
             }
             else{
                 // if not stored add it to the array
-
                 if(!contains(repositories, repoID)){
                     r = {repoID: repoID}
                     commitActivity = {commitActivity: data};
@@ -135,7 +128,6 @@ router.get('/', function(req, res) {
                     extend(repositories[i],commitActivity);
                     console.log("ADDED commitActivity info for REPO "+ repository);
                     /* generate graph for commit acitivty */
-                    var i = index(repositories, repoID);
                     var new_commit = [0,0,0,0,0,0,0];
                     for (var index = 0; i < repositories[i].commitActivity.length; i++ ){
                       for(j = 0; j < repositories[i].commitActivity[index].days.length; j++){
@@ -158,7 +150,6 @@ router.get('/', function(req, res) {
                     };
                     plotly.getImage(figure, imgOpts, function (error, imageStream) {
                         if (error) return console.log (error);
-                        console.log(JSON.stringify(repositories) + ' ' + repoID);
                         
                         var fileStream = fs.createWriteStream('public/img/commit-'+i+'.png');
                         imageStream.pipe(fileStream);
