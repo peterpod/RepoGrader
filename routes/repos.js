@@ -54,22 +54,6 @@ function extend(a, b){
     return a;
  }
 
- function addToRepositories( repositories , repoID, data){
-    r = {repoID: repoID}
-    commitActivity = {commitActivity: data};
-    extend(r,commitActivity);
-    repositories.push(r);
-    console.log("NEW REPO "+ repository +" commitActivity");
- }
-
- function pushToRepositories( repositories , repoID, data){
-    var i = index(repositories, repoID)
-    getInfo = {getInfo: data};
-    extend(repositories[i],getInfo);
-    console.log("ADDED getInfo info for REPO "+ repository);
- }
-
-
 //checks to see if all requests have been completed by looking for specific fields
 //called before rendering view 
 function dataComplete(repoID){
@@ -109,10 +93,16 @@ router.get('/', function(req, res) {
             else{
                 // if not stored add it to the array
                 if(!contains(repositories, repoID)){
-                    addToRepositories( repositories , repoID, data);
+                    r = {repoID: repoID}
+                    getInfo = {getInfo: data};
+                    extend(r,getInfo);
+                    repositories.push(r);
+                    console.log("NEW REPO "+ repository +" getInfo")
                 } else {
-                    pushToRepositories( repositories , repoID, data);
-                    console.log("ADDED getinfo for REPO " + repository);
+                    var i = index(repositories, repoID)
+                    getInfo = {getInfo: data};
+                    extend(repositories[i],getInfo);
+                    console.log("ADDED getInfo info for REPO "+ repository)
                 }
                 if (dataComplete(repoID)){
                     res.render('home', { repos: repositories, 'reviews': reviews});
@@ -132,11 +122,47 @@ router.get('/', function(req, res) {
             }
             else{
                 // if not stored add it to the array
+
                 if(!contains(repositories, repoID)){
-                    addToRepositories( repositories , repoID, data);
+                    r = {repoID: repoID}
+                    commitActivity = {commitActivity: data};
+                    extend(r,commitActivity);
+                    repositories.push(r);
+                    console.log("NEW REPO "+ repository +" commitActivity");
                 } else {
-                    pushToRepositories( repositories , repoID, data);
-                    console.log("ADDED commitActivity info for REPO " + repository);
+                    var i = index(repositories, repoID);
+                    commitActivity = {commitActivity: data};
+                    extend(repositories[i],commitActivity);
+                    console.log("ADDED commitActivity info for REPO "+ repository);
+                    /* generate graph for commit acitivty */
+                    var i = index(repositories, repoID);
+                    var new_commit = [0,0,0,0,0,0,0];
+                    for (var index = 0; i < repositories[i].commitActivity.length; i++ ){
+                      for(j = 0; j < repositories[i].commitActivity[index].days.length; j++){
+                        new_commit[j] += repositories[i].commitActivity[index].days[j];
+                      }
+                    }
+
+                    var trace = {
+                      x: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                      y: new_commit,
+                      type: "bar"
+                    };
+
+                    var figure = { 'data': [trace] };
+
+                    var imgOpts = {
+                        format: 'png',
+                        width: 300,
+                        height: 300
+                    };
+                    plotly.getImage(figure, imgOpts, function (error, imageStream) {
+                        if (error) return console.log (error);
+                        console.log(JSON.stringify(repositories) + ' ' + repoID);
+                        
+                        var fileStream = fs.createWriteStream('public/img/commit-'+i+'.png');
+                        imageStream.pipe(fileStream);
+                    });
                 }
                 if (dataComplete(repoID)){
                     res.render('home', { repos: repositories, 'reviews': reviews});
@@ -156,10 +182,16 @@ router.get('/', function(req, res) {
             else{
                 // if not stored add it to the array
                 if(!contains(repositories, repoID)){
-                    addToRepositories( repositories , repoID, data);
+                    r = {repoID: repoID};
+                    participation = {participation: data};
+                    extend(r,participation);
+                    repositories.push(r);
+                    console.log("NEW REPO "+ repository +" participation")
                 } else {
-                    pushToRepositories( repositories , repoID, data);
-                    console.log("ADDED participationList for REPO " + repository);
+                    var i = index(repositories, repoID)
+                    participation = {participation: data};
+                    extend(repositories[i],participation);
+                    console.log("ADDED participation info for REPO " + repository)
                 }
                 if (dataComplete(repoID)){
                     res.render('home', { repos: repositories, 'reviews': reviews});
@@ -181,10 +213,16 @@ router.get('/', function(req, res) {
             else{
                 // if not stored add it to the array
                 if(!contains(repositories, repoID)){
-                    addToRepositories( repositories , repoID, data);
+                    r = {repoID: repoID};
+                    contributorList = {contributorList: data};
+                    extend(r,contributorList);
+                    repositories.push(r);
+                    console.log("NEW REPO "+ repository +" contributorList");
                 } else {
-                    pushToRepositories( repositories , repoID, data);
-                    console.log("ADDED contributorList for REPO " + repository);
+                    var i = index(repositories, repoID)
+                    contributorList = {contributorList: data};
+                    extend(repositories[i],contributorList);
+                    console.log("ADDED contributorList info for REPO " + repository)
                 }
                 if (dataComplete(repoID)){
                     res.render('home', { repos: repositories, 'reviews': reviews});
