@@ -17,8 +17,17 @@ var github = new GitHubApi({
     }
 });
 
+github.authenticate({
+    type: "basic",
+    username: 'peterpod',
+    password: 'darktree94'
+});
+
 var plotly = require('plotly')('peterpod','e876efj98k');
 var fs = require('fs');
+
+var repositories = []; // array to store all repo info
+var reviews = {}; //object to store reviews for repo's
 
 // helper function to get index of repo in repo array
 function index(array, repo){
@@ -50,20 +59,44 @@ function extend(a, b){
 
 //checks to see if all requests have been completed by looking for specific fields
 //called before rendering view 
-function dataComplete(repoID){
+function dataComplete(repoID, callback){
     var i = index(repositories, repoID);
     for (var ind = 0; ind < repositories.length; ind++) {
         console.log(Object.keys(repositories[ind]));
     }
     //Check if each of the requests have been returned
-    if (repositories[i].getInfo!=null && repositories[i].commitActivity!=null && repositories[i].participation!=null && repositories[i].contributorList!=null){
-        return true;
+    if (repositories[i].getInfo!=null && repositories[i].commitActivity!=null && repositories[i].participation!=null && repositories[i].contributorList!=null && repositories[i].commitGraph != null ){
+        callback( true );
     }
-    return false;
+    callback(false);
  }
 
-var repositories = []; // array to store all repo info
-var reviews = {}; //object to store reviews for repo's
+ function generateGraph(repositories, i, callback){
+    /* generate graph for commit acitivty */
+    var length = repositories.length-1;
+    var new_commit = [0,0,0,0,0,0,0];
+    if(repositories[length].commitActivity == undefined){
+        return;
+    }
+    for (var index = 0; index < repositories[length].commitActivity.length; index++ ){
+      for(j = 0; j < repositories[length].commitActivity[index].days.length; j++){
+        new_commit[j] += repositories[length].commitActivity[index].days[j];
+      }
+    }
+
+    var data = [{
+      x: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      y: new_commit,
+      type: "bar"
+    }];
+
+    var graphOptions = {filename: repositories[i].repoID, fileopt: "overwrite"};
+    plotly.plot(data, graphOptions, function (err, msg) {
+        // return the url for the graph
+        console.log(msg);
+        callback(msg.url);
+    });
+ }
 
 /* routing function to get a user's repo */
 router.get('/', function(req, res) {
@@ -91,15 +124,28 @@ router.get('/', function(req, res) {
                     getInfo = {getInfo: data};
                     extend(r,getInfo);
                     repositories.push(r);
-                    console.log("NEW REPO "+ repository +" getInfo")
+                    console.log("NEW REPO "+ repository +" getInfo");
+
+                    generateGraph(repositories, repositories.length-1, function(url) {
+                        console.log(url);
+                        repositories[repositories.length-1].commitGraph = url;
+                        return;
+                    });
                 } else {
                     var i = index(repositories, repoID)
                     getInfo = {getInfo: data};
                     extend(repositories[i],getInfo);
                     console.log("ADDED getInfo info for REPO "+ repository)
-                }
-                if (dataComplete(repoID)){
-                    res.render('home', { repos: repositories, 'reviews': reviews});
+
+                    generateGraph(repositories, i, function(url) {
+                        console.log(url);
+                        repositories[i].commitGraph = url;
+                        dataComplete(repoID, function(complete){
+                            if (complete){
+                                res.render('home', { repos: repositories, 'reviews': reviews});
+                            }
+                        });
+                    });
                 }
             }
         });
@@ -127,37 +173,12 @@ router.get('/', function(req, res) {
                     commitActivity = {commitActivity: data};
                     extend(repositories[i],commitActivity);
                     console.log("ADDED commitActivity info for REPO "+ repository);
-                    /* generate graph for commit acitivty */
-                    var new_commit = [0,0,0,0,0,0,0];
-                    for (var index = 0; i < repositories[i].commitActivity.length; i++ ){
-                      for(j = 0; j < repositories[i].commitActivity[index].days.length; j++){
-                        new_commit[j] += repositories[i].commitActivity[index].days[j];
-                      }
+                }
+                dataComplete(repoID, function(complete){
+                    if (complete){
+                        res.render('home', { repos: repositories, 'reviews': reviews});
                     }
-
-                    var trace = {
-                      x: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-                      y: new_commit,
-                      type: "bar"
-                    };
-
-                    var figure = { 'data': [trace] };
-
-                    var imgOpts = {
-                        format: 'png',
-                        width: 300,
-                        height: 300
-                    };
-                    plotly.getImage(figure, imgOpts, function (error, imageStream) {
-                        if (error) return console.log (error);
-                        
-                        var fileStream = fs.createWriteStream('public/img/commit-'+i+'.png');
-                        imageStream.pipe(fileStream);
-                    });
-                }
-                if (dataComplete(repoID)){
-                    res.render('home', { repos: repositories, 'reviews': reviews});
-                }
+                });
             }
         });
 
@@ -184,9 +205,11 @@ router.get('/', function(req, res) {
                     extend(repositories[i],participation);
                     console.log("ADDED participation info for REPO " + repository)
                 }
-                if (dataComplete(repoID)){
-                    res.render('home', { repos: repositories, 'reviews': reviews});
-                }
+                dataComplete(repoID, function(complete){
+                    if (complete){
+                        res.render('home', { repos: repositories, 'reviews': reviews});
+                    }
+                });
             }
         });
 
@@ -215,9 +238,11 @@ router.get('/', function(req, res) {
                     extend(repositories[i],contributorList);
                     console.log("ADDED contributorList info for REPO " + repository)
                 }
-                if (dataComplete(repoID)){
-                    res.render('home', { repos: repositories, 'reviews': reviews});
-                }
+                dataComplete(repoID, function(complete){
+                    if (complete){
+                        res.render('home', { repos: repositories, 'reviews': reviews});
+                    }
+                });
             }
         });
     }
