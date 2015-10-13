@@ -33,8 +33,8 @@
 	    
 	    Primary Language: <strong> <%= repo.getInfo.language %> </strong><br/>
 	    <br>	    
-	    <h2>Commit Activity</h2>
-	    <h3>Commits for day of the week</h2>
+	    <h2 style='margin:0px;'>Commit Activity</h2>
+	    <h4 style='margin:0px;'>Commits for day of the week</h4>
 	    <div>
 		    <a href="<%= repo.commitGraph %>" target="_blank" title="y" style="display: block; text-align: center;"><img src="<%= repo.commitGraph %>.png" alt="y" style="max-width: 100%;width: 600px;"  width="600" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
 		    <script data-plotly="peterpod:<%= repo.commitGraph.split('/')[repo.commitGraph.split('/').length-1] %>"  src="https://plot.ly/embed.js" async></script>
