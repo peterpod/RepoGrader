@@ -1,7 +1,8 @@
 var GitHubApi = require("github"); // require git API
 var express = require('express'),
     router = express.Router(),
-    bodyParser = require("body-parser");
+    bodyParser = require("body-parser"),
+    helpers = require("utils");
 
 var github = new GitHubApi({
     // required
@@ -23,45 +24,13 @@ github.authenticate({
     password: 'darktree94'
 });
 
-// link plotly api
-var plotly = require('plotly')('peterpod','e876efj98k');
-var fs = require('fs');
-
 var repositories = []; // array to store all repo info
 var reviews = {}; //object to store reviews for repo's
-
-// helper function to get index of repo in repo array
-function index(array, repo){
-    for( i = 0; i< array.length; i++){
-        if(array[i].repoID == repo){
-            return i;
-        }
-    }
-}
-
-// helper function to determine if repo is already stored
-function contains(array, repo){
-    for( i = 0; i< array.length; i++){
-        // is repo name in the array
-        if(array[i].repoID == repo){
-            return true;
-        }
-    }
-    return false;
-}
-
-//merges json arrays. used to stitch JSON responses from each get request together
-function extend(a, b){
-    for(var key in b)
-        if(b.hasOwnProperty(key))
-            a[key] = b[key];
-    return a;
- }
 
 //checks to see if all requests have been completed by looking for specific fields
 //called before rendering view 
 function dataComplete(repoID, callback){
-    var i = index(repositories, repoID);
+    var i = helpers.index(repositories, repoID);
     for (var ind = 0; ind < repositories.length; ind++) {
         console.log(Object.keys(repositories[ind]));
     }
@@ -71,68 +40,6 @@ function dataComplete(repoID, callback){
     else{
         return(callback(false));
     }
- }
-
- /* creates data array for plotly commit Week graph 
-    #commits / day
- */
- function generateCommitData(repositories, i){
-    var new_commit = [0,0,0,0,0,0,0];
-    if(repositories[i].commitActivity == undefined){
-        return;
-    }
-    for (var ind = 0; ind < repositories[i].commitActivity.length; ind++ ){
-      for(j = 0; j < repositories[i].commitActivity[ind].days.length; j++){
-        new_commit[j] += repositories[i].commitActivity[ind].days[j];
-      }
-    }
-
-    var data = [{
-      x: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-      y: new_commit,
-      type: "line"
-    }];
-
-    return data;
- }
-
-/* creates data array for plotly commitDate graph 
-   #commits / week(date)
-*/
- function generateCommitDateData(repositories, i){
-    x = []; // weeks in date format
-    y = []; // commits for the entire week
-
-    for (ind = 0; ind < repositories[i].commitActivity.length; ind++){
-      for(key in repositories[i].commitActivity[ind]){
-          if( key == "total"){
-            y[ind] = repositories[i].commitActivity[ind].total
-          }
-      }
-      var unix_timestamp = repositories[i].commitActivity[ind].week;
-      var date = new Date(unix_timestamp*1000);
-      date = (date.getMonth() +1 ) +'/'+ date.getDate();
-      x[ind] = date;
-    }
-
-    var data =[{ 'x' : x, 'y': y, type:"bar"}];
-
-    return data;
- }
-
- /* pass in the array of repos, index of repo, data for graph,
-    graph options, type of graph(commitActivity, etc) */
- function generateGraph(repositories, i, data, type, callback){
-    /* generate plotly graph */
-    // ensure unique filenames by using type
-    var graphOptions = {filename: type + '/' + repositories[i].repoID, fileopt: "overwrite"};
-    plotly.plot(data, graphOptions, function (err, msg) {
-        if(err) return callback(err, msg);
-        
-        // return the url for the graph
-        console.log(msg);
-        return(callback(err , msg.url));
-    });
  }
 
 /* routing function to get a user's repo */
@@ -156,16 +63,16 @@ router.get('/', function(req, res) {
             }
             else{
                 // if not stored add it to the array
-                if(!contains(repositories, repoID)){
+                if(!helpers.contains(repositories, repoID)){
                     r = {repoID: repoID}
                     getInfo = {getInfo: data};
-                    extend(r,getInfo);
+                    helpers.extend(r,getInfo);
                     repositories.push(r);
                     console.log("NEW REPO "+ repository +" getInfo");
                 } else {
-                    var i = index(repositories, repoID)
+                    var i = helpers.index(repositories, repoID)
                     getInfo = {getInfo: data};
-                    extend(repositories[i],getInfo);
+                    helpers.extend(repositories[i],getInfo);
                     console.log("ADDED getInfo info for REPO "+ repository)
                 }
                 dataComplete(repoID, function(complete){
@@ -188,51 +95,52 @@ router.get('/', function(req, res) {
             }
             else{
                 // if not stored add it to the array
-                if(!contains(repositories, repoID)){
+                if(!helpers.contains(repositories, repoID)){
                     r = {repoID: repoID}
                     commitActivity = {commitActivity: data};
-                    extend(r,commitActivity);
+                    helpers.extend(r,commitActivity);
                     repositories.push(r);
                     console.log("NEW REPO "+ repository +" commitActivity");
 
                     // # commits / day of the week
-                    var weeklyData = generateCommitData(repositories, repositories.length-1);
-                    generateGraph(repositories, repositories.length-1, weeklyData, 'commitWeeklyGraph', function(err, url) {
+                    var weeklyData = helpers.generateCommitData(repositories, repositories.length-1);
+                    console.log(weeklyData);
+                    helpers.generateGraph(repositories, repositories.length-1, weeklyData, 'commitWeeklyGraph', function(err, url) {
                         if(err) return console.error(err);
                         console.log(url);
                         // add plotly url to repositories array
                         repositories[repositories.length-1].commitWeeklyGraph = url;
                         dataComplete(repoID, function(complete){
                             if (complete){
-                                console.log('finally complete');
                                 res.render('home', { repos: repositories, 'reviews': reviews});
                             }
                         });
                     });
 
                     // # commits for entire week over time
-                    var dateData = generateCommitDateData(repositories, repositories.length-1);
-                    generateGraph(repositories, repositories.length-1, dateData, 'commitDateGraph', function(err, url) {
+                    var dateData = helpers.generateCommitDateData(repositories, repositories.length-1);
+                    console.log(dateData);
+                    helpers.generateGraph(repositories, repositories.length-1, dateData, 'commitDateGraph', function(err, url) {
                         if(err) return console.error(err);
                         console.log(url);
                         // add plotly url to repositories array
                         repositories[repositories.length-1].commitDateGraph = url;
                         dataComplete(repoID, function(complete){
                             if (complete){
-                                console.log('finally complete');
                                 res.render('home', { repos: repositories, 'reviews': reviews});
                             }
                         });
                     });
                 } else {
-                    var i = index(repositories, repoID);
+                    var i = helpers.index(repositories, repoID);
                     commitActivity = {commitActivity: data};
-                    extend(repositories[i],commitActivity);
+                    helpers.extend(repositories[i],commitActivity);
                     console.log("ADDED commitActivity info for REPO "+ repository);
 
                     // # commits / day of the week
-                    var weeklyData = generateCommitData(repositories, i)
-                    generateGraph(repositories, i, weeklyData , 'commitWeeklyGraph', function(err, url) {
+                    var weeklyData = helpers.generateCommitData(repositories, i)
+                    console.log(weeklyData);
+                    helpers.generateGraph(repositories, i, weeklyData , 'commitWeeklyGraph', function(err, url) {
                         if(err) return console.error(err);                        
                         console.log(url);
                         // add plotly url to repositories array
@@ -246,8 +154,9 @@ router.get('/', function(req, res) {
                     });
 
                     // # commits for entire week over time
-                    var dateData = generateCommitDateData(repositories, i);
-                    generateGraph(repositories, i, dateData, 'commitDateGraph', function(err, url) {
+                    var dateData = helpers.generateCommitDateData(repositories, i);
+                    console.log(dateData);
+                    helpers.generateGraph(repositories, i, dateData, 'commitDateGraph', function(err, url) {
                         if(err) return console.error(err);
                         console.log(url);
                         repositories[i].commitDateGraph = url;
@@ -273,16 +182,16 @@ router.get('/', function(req, res) {
             }
             else{
                 // if not stored add it to the array
-                if(!contains(repositories, repoID)){
+                if(!helpers.contains(repositories, repoID)){
                     r = {repoID: repoID};
                     participation = {participation: data};
-                    extend(r,participation);
+                    helpers.extend(r,participation);
                     repositories.push(r);
                     console.log("NEW REPO "+ repository +" participation")
                 } else {
-                    var i = index(repositories, repoID);
+                    var i = helpers.index(repositories, repoID);
                     participation = {participation: data};
-                    extend(repositories[i],participation);
+                    helpers.extend(repositories[i],participation);
                     console.log("ADDED participation info for REPO " + repository)
                 }
                 dataComplete(repoID, function(complete){
@@ -306,16 +215,16 @@ router.get('/', function(req, res) {
             }
             else{
                 // if not stored add it to the array
-                if(!contains(repositories, repoID)){
+                if(!helpers.contains(repositories, repoID)){
                     r = {repoID: repoID};
                     contributorList = {contributorList: data};
-                    extend(r,contributorList);
+                    helpers.extend(r,contributorList);
                     repositories.push(r);
                     console.log("NEW REPO "+ repository +" contributorList");
                 } else {
-                    var i = index(repositories, repoID);
+                    var i = helpers.index(repositories, repoID);
                     contributorList = {contributorList: data};
-                    extend(repositories[i],contributorList);
+                    helpers.extend(repositories[i],contributorList);
                     console.log("ADDED contributorList info for REPO " + repository)
                 }
                 dataComplete(repoID, function(complete){
@@ -339,10 +248,10 @@ router.route('/:user/:repo').delete(function(req, res) {
     var repo = req.params.repo;
     var repoID = (user+"/"+repo).toLowerCase();
     console.log('HI TRYING TO DELETE SOMETHING', repoID)
-    if(contains(repositories, repoID)){
+    if(helpers.contains(repositories, repoID)){
         console.log("found it ;)")
         //remove repo once you've found it's index.
-        repositories.splice(index(repositories, repoID),1);
+        repositories.splice(helpers.index(repositories, repoID),1);
         res.render('home', { repos: repositories, 'reviews': reviews});
     }
 });
