@@ -66,10 +66,10 @@ function dataComplete(repoID, callback){
     }
     //Check if each of the requests have been returned
     if (repositories[i].getInfo!=null && repositories[i].commitActivity!=null && repositories[i].participation!=null && repositories[i].contributorList!=null && repositories[i].commitWeeklyGraph != null && repositories[i].commitDateGraph != null){
-        callback( true );
+        return(callback( true ));
     }
     else{
-        callback(false);
+        return(callback(false));
     }
  }
 
@@ -133,7 +133,7 @@ function dataComplete(repoID, callback){
         // return the url for the graph
         repositories[i][type] = msg.url;
         console.log(msg);
-        callback(msg.url);
+        return(callback(msg.url));
     });
  }
 
@@ -165,7 +165,6 @@ router.get('/', function(req, res) {
                     repositories.push(r);
                     console.log("NEW REPO "+ repository +" getInfo");
                 } else {
-                                        console.log(JSON.stringify(repositories), repoID);
                     var i = index(repositories, repoID)
                     getInfo = {getInfo: data};
                     extend(repositories[i],getInfo);
@@ -174,6 +173,10 @@ router.get('/', function(req, res) {
                 dataComplete(repoID, function(complete){
                     if (complete){
                         res.render('home', { repos: repositories, 'reviews': reviews});
+                    }
+                    else{
+                        console.log('incomplete');
+                        return;
                     }
                 });
             }
@@ -208,6 +211,10 @@ router.get('/', function(req, res) {
                                 console.log('finally complete');
                                 res.render('home', { repos: repositories, 'reviews': reviews});
                             }
+                            else{
+                                console.log('incomplete');
+                                return;
+                            }
                         });
                     });
 
@@ -221,6 +228,10 @@ router.get('/', function(req, res) {
                             if (complete){
                                 console.log('finally complete');
                                 res.render('home', { repos: repositories, 'reviews': reviews});
+                            }
+                            else{
+                                console.log('incomplete');
+                                return;
                             }
                         });
                     });
