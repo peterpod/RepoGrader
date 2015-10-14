@@ -59,17 +59,18 @@ function extend(a, b){
 
 //checks to see if all requests have been completed by looking for specific fields
 //called before rendering view 
-function dataComplete(repoID, callback){
+function dataComplete(repoID){
     var i = index(repositories, repoID);
     for (var ind = 0; ind < repositories.length; ind++) {
         console.log(Object.keys(repositories[ind]));
     }
     //Check if each of the requests have been returned
+    console.log(repositories[i].commitWeeklyGraph + " " + repositories[i].commitDateGraph);
     if (repositories[i].getInfo!=null && repositories[i].commitActivity!=null && repositories[i].participation!=null && repositories[i].contributorList!=null && repositories[i].commitWeeklyGraph != null && repositories[i].commitDateGraph != null){
-        return(callback( true ));
+        return true;
     }
     else{
-        return(callback(false));
+        return false;
     }
  }
 
@@ -77,7 +78,6 @@ function dataComplete(repoID, callback){
     #commits / day
  */
  function generateCommitData(repositories, i){
-    console.log('im getting in here after I print url');
     var new_commit = [0,0,0,0,0,0,0];
     if(repositories[i].commitActivity == undefined){
         return;
@@ -131,7 +131,6 @@ function dataComplete(repoID, callback){
     plotly.plot(data, graphOptions, function (err, msg) {
         if(err) return callback(err);
         // return the url for the graph
-        repositories[i][type] = msg.url;
         console.log(msg);
         return(callback(msg.url));
     });
@@ -170,15 +169,18 @@ router.get('/', function(req, res) {
                     extend(repositories[i],getInfo);
                     console.log("ADDED getInfo info for REPO "+ repository)
                 }
-                dataComplete(repoID, function(complete){
-                    if (complete){
-                        res.render('home', { repos: repositories, 'reviews': reviews});
-                    }
-                    else{
-                        console.log('incomplete');
-                        return;
-                    }
-                });
+                if(dataComplete(repoID)){
+                    res.render('home', { repos: repositories, 'reviews': reviews});
+                }
+                // dataComplete(repoID, function(complete){
+                //     if (complete){
+                //         res.render('home', { repos: repositories, 'reviews': reviews});
+                //     }
+                //     else{
+                //         console.log('1incomplete');
+                //         return;
+                //     }
+                // });
             }
         });
 
@@ -202,39 +204,27 @@ router.get('/', function(req, res) {
                     console.log("NEW REPO "+ repository +" commitActivity");
 
                     // # commits / day of the week
-                    generateGraph(repositories, repositories.length-1, generateCommitData(repositories, repositories.length-1), 'commitWeeklyGraph', function(err, url) {
+                    var weeklyData = generateCommitData(repositories, repositories.length-1);
+                    generateGraph(repositories, repositories.length-1, weeklyData, 'commitWeeklyGraph', function(err, url) {
                         if(err) return console.log(err);
                         console.log(url);
-                        // repositories[repositories.length-1].commitGraph = url;
-                        dataComplete(repoID, function(complete){
-                            if (complete){
-                                console.log('finally complete');
-                                res.render('home', { repos: repositories, 'reviews': reviews});
-                            }
-                            else{
-                                console.log('incomplete');
-                                return;
-                            }
-                        });
+                        // add plotly url to repositories array
+                        repositories[repositories.length-1].commitWeeklyGraph = url;
+                                        if(dataComplete(repoID)){
+                    res.render('home', { repos: repositories, 'reviews': reviews});
+                }
                     });
 
                     // # commits for entire week over time
-                    generateGraph(repositories, repositories.length-1, generateCommitDateData(repositories, repositories.length-1), 'commitDateGraph', function(err, url) {
+                    var dateData = generateCommitDateData(repositories, repositories.length-1);
+                    generateGraph(repositories, repositories.length-1, dateData, 'commitDateGraph', function(err, url) {
                         if(err) return console.log(err);
                         console.log(url);
-                        // repositories[repositories.length-1].commitDateGraph = url;
-                        // console.log('1' + repositories[repositories.length-1].commitDateGraph);
-                        dataComplete(repoID, function(complete){
-                            if (complete){
-                                console.log('finally complete');
-                                res.render('home', { repos: repositories, 'reviews': reviews});
-                            }
-                            else{
-                                console.log('incomplete');
-                                return;
-                            }
-                        });
-                    });
+                        // add plotly url to repositories array
+                        repositories[repositories.length-1].commitDateGraph = url;
+                if(dataComplete(repoID)){
+                    res.render('home', { repos: repositories, 'reviews': reviews});
+                }                    });
                 } else {
                     var i = index(repositories, repoID);
                     commitActivity = {commitActivity: data};
@@ -242,32 +232,25 @@ router.get('/', function(req, res) {
                     console.log("ADDED commitActivity info for REPO "+ repository);
 
                     // # commits / day of the week
-                    generateGraph(repositories, i, generateCommitData(repositories, i), 'commitWeeklyGraph', function(url) {
+                    var weeklyData = generateCommitData(repositories, i)
+                    generateGraph(repositories, i, weeklyData , 'commitWeeklyGraph', function(url) {
                         console.log(url);
-                        // repositories[i].commitGraph = url;
-                        dataComplete(repoID, function(complete){
-                            if (complete){
-                                console.log('finally complete');
-                                res.render('home', { repos: repositories, 'reviews': reviews});
-                            }
-                        });
+                        // add plotly url to repositories array
+                        repositories[i].commitWeeklyGraph = url;
+                if(dataComplete(repoID)){
+                    res.render('home', { repos: repositories, 'reviews': reviews});
+                }
                     });
 
                     // # commits for entire week over time
-                    generateGraph(repositories, i, generateCommitDateData(repositories, repositories.length-1), 'commitDateGraph', function(err, url) {
+                    var dateData = generateCommitDateData(repositories, i);
+                    generateGraph(repositories, i, dateData, 'commitDateGraph', function(err, url) {
                         if(err) return console.log(err);
                         console.log(url);
-                        // repositories[i].commitDateGraph = url;
-                        // console.log('2' + repositories[i].commitDateGraph);
-                        dataComplete(repoID, function(complete){
-                            if (complete){
-                                console.log('finally complete');
-                                res.render('home', { repos: repositories, 'reviews': reviews});
-                            }
-                            else{
-                                console.log('5incomplete');
-                            }
-                        });
+                        repositories[i].commitDateGraph = url;
+                if(dataComplete(repoID)){
+                    res.render('home', { repos: repositories, 'reviews': reviews});
+                }
                     });
                 }
             }
@@ -296,11 +279,9 @@ router.get('/', function(req, res) {
                     extend(repositories[i],participation);
                     console.log("ADDED participation info for REPO " + repository)
                 }
-                dataComplete(repoID, function(complete){
-                    if (complete){
-                        res.render('home', { repos: repositories, 'reviews': reviews});
-                    }
-                });
+                if(dataComplete(repoID)){
+                    res.render('home', { repos: repositories, 'reviews': reviews});
+                }
             }
         });
 
@@ -329,11 +310,9 @@ router.get('/', function(req, res) {
                     extend(repositories[i],contributorList);
                     console.log("ADDED contributorList info for REPO " + repository)
                 }
-                dataComplete(repoID, function(complete){
-                    if (complete){
-                        res.render('home', { repos: repositories, 'reviews': reviews});
-                    }
-                });
+                if(dataComplete(repoID)){
+                    res.render('home', { repos: repositories, 'reviews': reviews});
+                }
             }
         });
     }
