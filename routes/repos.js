@@ -18,12 +18,6 @@ var github = new GitHubApi({
     }
 });
 
-github.authenticate({
-    type: "basic",
-    username: 'peterpod',
-    password: 'darktree94'
-});
-
 var repositories = []; // array to store all repo info
 var reviews = {}; //object to store reviews for repo's
 
