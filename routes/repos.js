@@ -1,7 +1,8 @@
 var GitHubApi = require("github"); // require git API
 var express = require('express'),
     router = express.Router(),
-    bodyParser = require("body-parser");
+    bodyParser = require("body-parser"),
+    helpers = require("utils");
 
 var github = new GitHubApi({
     // required
@@ -17,50 +18,23 @@ var github = new GitHubApi({
     }
 });
 
-// helper function to get index of repo in repo array
-function index(array, repo){
-    for( i = 0; i< array.length; i++){
-        if(array[i].repoID == repo){
-            return i;
-        }
-    }
-}
-
-// helper function to determine if repo is already stored
-function contains(array, repo){
-    for( i = 0; i< array.length; i++){
-        // is repo name in the array
-        if(array[i].repoID == repo){
-            return true;
-        }
-    }
-    return false;
-}
-
-//merges json arrays. used to stitch JSON responses from each get request together
-function extend(a, b){
-    for(var key in b)
-        if(b.hasOwnProperty(key))
-            a[key] = b[key];
-    return a;
- }
+var repositories = []; // array to store all repo info
+var reviews = {}; //object to store reviews for repo's
 
 //checks to see if all requests have been completed by looking for specific fields
 //called before rendering view 
-function dataComplete(repoID){
-    var i = index(repositories, repoID);
+function dataComplete(repoID, callback){
+    var i = helpers.index(repositories, repoID);
     for (var ind = 0; ind < repositories.length; ind++) {
         console.log(Object.keys(repositories[ind]));
     }
-    //Check if each of the requests have been returned
-    if (repositories[i].getInfo!=null && repositories[i].commitActivity!=null && repositories[i].participation!=null && repositories[i].contributorList!=null){
-        return true;
+    if (repositories[i].getInfo!=null && repositories[i].commitActivity!=null && repositories[i].participation!=null && repositories[i].contributorList!=null && repositories[i].commitWeeklyGraph != null && repositories[i].commitDateGraph != null){
+        return(callback( true ));
     }
-    return false;
+    else{
+        return(callback(false));
+    }
  }
-
-var repositories = []; // array to store all repo info
-var reviews = {}; //object to store reviews for repo's
 
 /* routing function to get a user's repo */
 router.get('/', function(req, res) {
@@ -83,21 +57,23 @@ router.get('/', function(req, res) {
             }
             else{
                 // if not stored add it to the array
-                if(!contains(repositories, repoID)){
+                if(!helpers.contains(repositories, repoID)){
                     r = {repoID: repoID}
                     getInfo = {getInfo: data};
-                    extend(r,getInfo);
+                    helpers.extend(r,getInfo);
                     repositories.push(r);
-                    console.log("NEW REPO "+ repository +" getInfo")
+                    console.log("NEW REPO "+ repository +" getInfo");
                 } else {
-                    var i = index(repositories, repoID)
+                    var i = helpers.index(repositories, repoID)
                     getInfo = {getInfo: data};
-                    extend(repositories[i],getInfo);
+                    helpers.extend(repositories[i],getInfo);
                     console.log("ADDED getInfo info for REPO "+ repository)
                 }
-                if (dataComplete(repoID)){
-                    res.render('home', { repos: repositories, 'reviews': reviews});
-                }
+                dataComplete(repoID, function(complete){
+                    if (complete){
+                        res.render('home', { repos: repositories, 'reviews': reviews});
+                    }
+                });
             }
         });
 
@@ -113,20 +89,78 @@ router.get('/', function(req, res) {
             }
             else{
                 // if not stored add it to the array
-                if(!contains(repositories, repoID)){
+                if(!helpers.contains(repositories, repoID)){
                     r = {repoID: repoID}
                     commitActivity = {commitActivity: data};
-                    extend(r,commitActivity);
+                    helpers.extend(r,commitActivity);
                     repositories.push(r);
-                    console.log("NEW REPO "+ repository +" commitActivity")
+                    console.log("NEW REPO "+ repository +" commitActivity");
+
+                    // # commits / day of the week
+                    var weeklyData = helpers.generateCommitData(repositories, repositories.length-1);
+                    console.log(weeklyData);
+                    helpers.generateGraph(repositories, repositories.length-1, weeklyData, 'commitWeeklyGraph', function(err, url) {
+                        if(err) return console.error(err);
+                        console.log(url);
+                        // add plotly url to repositories array
+                        repositories[repositories.length-1].commitWeeklyGraph = url;
+                        dataComplete(repoID, function(complete){
+                            if (complete){
+                                res.render('home', { repos: repositories, 'reviews': reviews});
+                            }
+                        });
+                    });
+
+                    // # commits for entire week over time
+                    var dateData = helpers.generateCommitDateData(repositories, repositories.length-1);
+                    console.log(dateData);
+                    helpers.generateGraph(repositories, repositories.length-1, dateData, 'commitDateGraph', function(err, url) {
+                        if(err) return console.error(err);
+                        console.log(url);
+                        // add plotly url to repositories array
+                        repositories[repositories.length-1].commitDateGraph = url;
+                        dataComplete(repoID, function(complete){
+                            if (complete){
+                                res.render('home', { repos: repositories, 'reviews': reviews});
+                            }
+                        });
+                    });
                 } else {
-                    var i = index(repositories, repoID)
+                    var i = helpers.index(repositories, repoID);
                     commitActivity = {commitActivity: data};
-                    extend(repositories[i],commitActivity);
-                    console.log("ADDED commitActivity info for REPO "+ repository)
-                }
-                if (dataComplete(repoID)){
-                    res.render('home', { repos: repositories, 'reviews': reviews});
+                    helpers.extend(repositories[i],commitActivity);
+                    console.log("ADDED commitActivity info for REPO "+ repository);
+
+                    // # commits / day of the week
+                    var weeklyData = helpers.generateCommitData(repositories, i)
+                    console.log(weeklyData);
+                    helpers.generateGraph(repositories, i, weeklyData , 'commitWeeklyGraph', function(err, url) {
+                        if(err) return console.error(err);                        
+                        console.log(url);
+                        // add plotly url to repositories array
+                        repositories[i].commitWeeklyGraph = url;
+                        dataComplete(repoID, function(complete){
+                            if (complete){
+                                console.log('finally complete');
+                                res.render('home', { repos: repositories, 'reviews': reviews});
+                            }
+                        });
+                    });
+
+                    // # commits for entire week over time
+                    var dateData = helpers.generateCommitDateData(repositories, i);
+                    console.log(dateData);
+                    helpers.generateGraph(repositories, i, dateData, 'commitDateGraph', function(err, url) {
+                        if(err) return console.error(err);
+                        console.log(url);
+                        repositories[i].commitDateGraph = url;
+                        dataComplete(repoID, function(complete){
+                            if (complete){
+                                console.log('finally complete');
+                                res.render('home', { repos: repositories, 'reviews': reviews});
+                            }
+                        });
+                    });
                 }
             }
         });
@@ -142,21 +176,23 @@ router.get('/', function(req, res) {
             }
             else{
                 // if not stored add it to the array
-                if(!contains(repositories, repoID)){
+                if(!helpers.contains(repositories, repoID)){
                     r = {repoID: repoID};
                     participation = {participation: data};
-                    extend(r,participation);
+                    helpers.extend(r,participation);
                     repositories.push(r);
                     console.log("NEW REPO "+ repository +" participation")
                 } else {
-                    var i = index(repositories, repoID)
+                    var i = helpers.index(repositories, repoID);
                     participation = {participation: data};
-                    extend(repositories[i],participation);
+                    helpers.extend(repositories[i],participation);
                     console.log("ADDED participation info for REPO " + repository)
                 }
-                if (dataComplete(repoID)){
-                    res.render('home', { repos: repositories, 'reviews': reviews});
-                }
+                dataComplete(repoID, function(complete){
+                    if (complete){
+                        res.render('home', { repos: repositories, 'reviews': reviews});
+                    }
+                });
             }
         });
 
@@ -173,21 +209,23 @@ router.get('/', function(req, res) {
             }
             else{
                 // if not stored add it to the array
-                if(!contains(repositories, repoID)){
+                if(!helpers.contains(repositories, repoID)){
                     r = {repoID: repoID};
                     contributorList = {contributorList: data};
-                    extend(r,contributorList);
+                    helpers.extend(r,contributorList);
                     repositories.push(r);
-                    console.log("NEW REPO "+ repository +" contributorList")
+                    console.log("NEW REPO "+ repository +" contributorList");
                 } else {
-                    var i = index(repositories, repoID)
+                    var i = helpers.index(repositories, repoID);
                     contributorList = {contributorList: data};
-                    extend(repositories[i],contributorList);
+                    helpers.extend(repositories[i],contributorList);
                     console.log("ADDED contributorList info for REPO " + repository)
                 }
-                if (dataComplete(repoID)){
-                    res.render('home', { repos: repositories, 'reviews': reviews});
-                }
+                dataComplete(repoID, function(complete){
+                    if (complete){
+                        res.render('home', { repos: repositories, 'reviews': reviews});
+                    }
+                });
             }
         });
     }
@@ -204,10 +242,10 @@ router.route('/:user/:repo').delete(function(req, res) {
     var repo = req.params.repo;
     var repoID = (user+"/"+repo).toLowerCase();
     console.log('HI TRYING TO DELETE SOMETHING', repoID)
-    if(contains(repositories, repoID)){
+    if(helpers.contains(repositories, repoID)){
         console.log("found it ;)")
         //remove repo once you've found it's index.
-        repositories.splice(index(repositories, repoID),1);
+        repositories.splice(helpers.index(repositories, repoID),1);
         res.render('home', { repos: repositories, 'reviews': reviews});
     }
 });
