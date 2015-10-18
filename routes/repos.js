@@ -20,6 +20,7 @@ var github = new GitHubApi({
 
 var repositories = []; // array to store all repo info
 var reviews = {}; //object to store reviews for repo's
+var userLogin;
 
 //checks to see if all requests have been completed by looking for specific fields
 //called before rendering view 
@@ -35,6 +36,7 @@ function dataComplete(repoID, callback){
         return(callback(false));
     }
  }
+
 
 /* routing function to get a user's repo */
 router.get('/', function(req, res) {
@@ -53,7 +55,7 @@ router.get('/', function(req, res) {
             var repoID = (username+"/"+repository).toLowerCase();
             // error with request
             if(err){
-                res.render('home', { message: "Could not find repository"});
+                res.render('home', { message: "Could not find repository", user: userLogin});
             }
             else{
                 // if not stored add it to the array
@@ -71,7 +73,7 @@ router.get('/', function(req, res) {
                 }
                 dataComplete(repoID, function(complete){
                     if (complete){
-                        res.render('home', { repos: repositories, 'reviews': reviews});
+                        res.render('home', { repos: repositories, 'reviews': reviews, user: userLogin});
                     }
                 });
             }
@@ -85,7 +87,7 @@ router.get('/', function(req, res) {
             var repoID = (username+"/"+repository).toLowerCase();
             // error with request
             if(err){
-                res.render('home', { message: "Could not find repository"});
+                res.render('home', { message: "Could not find repository", user: userLogin});
             }
             else{
                 // if not stored add it to the array
@@ -106,7 +108,7 @@ router.get('/', function(req, res) {
                         repositories[repositories.length-1].commitWeeklyGraph = url;
                         dataComplete(repoID, function(complete){
                             if (complete){
-                                res.render('home', { repos: repositories, 'reviews': reviews});
+                                res.render('home', { repos: repositories, 'reviews': reviews, user: userLogin});
                             }
                         });
                     });
@@ -121,7 +123,7 @@ router.get('/', function(req, res) {
                         repositories[repositories.length-1].commitDateGraph = url;
                         dataComplete(repoID, function(complete){
                             if (complete){
-                                res.render('home', { repos: repositories, 'reviews': reviews});
+                                res.render('home', { repos: repositories, 'reviews': reviews, user: userLogin});
                             }
                         });
                     });
@@ -142,7 +144,7 @@ router.get('/', function(req, res) {
                         dataComplete(repoID, function(complete){
                             if (complete){
                                 console.log('finally complete');
-                                res.render('home', { repos: repositories, 'reviews': reviews});
+                                res.render('home', { repos: repositories, 'reviews': reviews, user: userLogin});
                             }
                         });
                     });
@@ -157,7 +159,7 @@ router.get('/', function(req, res) {
                         dataComplete(repoID, function(complete){
                             if (complete){
                                 console.log('finally complete');
-                                res.render('home', { repos: repositories, 'reviews': reviews});
+                                res.render('home', { repos: repositories, 'reviews': reviews, user: userLogin});
                             }
                         });
                     });
@@ -172,7 +174,7 @@ router.get('/', function(req, res) {
             var repoID = (username+"/"+repository).toLowerCase();
             // error with request
             if(err){
-                res.render('home', { message: "Could not find repository"});
+                res.render('home', { message: "Could not find repository", user: userLogin});
             }
             else{
                 // if not stored add it to the array
@@ -190,7 +192,7 @@ router.get('/', function(req, res) {
                 }
                 dataComplete(repoID, function(complete){
                     if (complete){
-                        res.render('home', { repos: repositories, 'reviews': reviews});
+                        res.render('home', { repos: repositories, 'reviews': reviews, user: userLogin});
                     }
                 });
             }
@@ -205,7 +207,7 @@ router.get('/', function(req, res) {
             var repoID = (username+"/"+repository).toLowerCase();
             // error with request
             if(err){
-                res.render('home', { message: "Could not find repository"});
+                res.render('home', { message: "Could not find repository", user: userLogin});
             }
             else{
                 // if not stored add it to the array
@@ -223,7 +225,7 @@ router.get('/', function(req, res) {
                 }
                 dataComplete(repoID, function(complete){
                     if (complete){
-                        res.render('home', { repos: repositories, 'reviews': reviews});
+                        res.render('home', { repos: repositories, 'reviews': reviews, user: userLogin});
                     }
                 });
             }
@@ -231,7 +233,7 @@ router.get('/', function(req, res) {
     }
     // no query string was used so we will just load the home page
     else{
-        res.render('home', { repos: repositories, 'reviews': reviews});
+        res.render('home', { repos: repositories, 'reviews': reviews, user: userLogin});
     }
 });
 
@@ -246,7 +248,7 @@ router.route('/:user/:repo').delete(function(req, res) {
         console.log("found it ;)")
         //remove repo once you've found it's index.
         repositories.splice(helpers.index(repositories, repoID),1);
-        res.render('home', { repos: repositories, 'reviews': reviews});
+        res.render('home', { repos: repositories, 'reviews': reviews, user: userLogin});
     }
 });
 
@@ -254,9 +256,10 @@ router.route('/:user/:repo').delete(function(req, res) {
 router.route('/review/add/:user/:repo').get(function(req, res) {
     var user = req.params.user;
     var repo = req.params.repo;
+    var username = userLogin;
 
     // route to the addReview page
-    res.render('addReview', { addReview: {'user': user, 'repo': repo} });
+    res.render('addReview', { addReview: {'user': user, 'repo': repo} , 'username': username });
 });
 
 /* routing function to get a repo's reviews */
@@ -264,11 +267,12 @@ router.route('/review/:user/:repo').get(function(req, res) {
     var user = req.params.user;
     var repo = req.params.repo;
     var address = (user + '/' + repo).toLowerCase();
+    var username = userLogin;
 
     // array of reviews for a particular repo
     reviewsArray = reviews[address].reviews;
 
-    res.render('review', { reviews: reviewsArray, 'user': user, 'repo': repo });
+    res.render('review', { reviews: reviewsArray, 'user': user, 'repo': repo, 'username': username});
 });
 
 /* routing function to add a review to a repo */
@@ -289,7 +293,6 @@ router.post('/review/', function(req, res) {
     else{
         // push to array of reviews
         reviews[repoAddress].reviews.push({"star": stars, "username": username, "subject":subject, "date":date, "review": review});
-
     }
 
     console.log(JSON.stringify(reviews));
@@ -297,6 +300,18 @@ router.post('/review/', function(req, res) {
     res.redirect('../../repos');
 });
 
+/* routing function to pass a user's login information */
+router.post('/login/', function(req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+    userLogin = username;
 
+    github.authenticate({
+        type: "basic",
+        username: username,
+        password: password});
+
+    res.render('home', { repos: repositories, 'reviews': reviews, user: userLogin});
+});
 
 module.exports = router;
