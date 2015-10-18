@@ -1,4 +1,4 @@
-<div class="col-sm-6">
+<div class="col-sm-6" id='<%= repo.getInfo.owner.login %>_<%= repo.getInfo.name%>'>
 	<div class="panel panel-default">
 	  <div class="panel-body">
 	    <h2><a href='<%= repo.getInfo.owner.html_url%>'><%= repo.getInfo.owner.login %> </a> / <a href='<%= repo.getInfo.html_url %>'><%= repo.getInfo.name %> </a>
@@ -9,6 +9,7 @@
 				</button>
 			</form>
 		</h2>
+		<h3 id='<%= repo.getInfo.owner.login %>_<%= repo.getInfo.name%>_grade'>Grade: </h3>
 
 		<% if( Object.keys(reviews).length > 0) { %>
 			<% if( reviews[repo.getInfo.owner.login+'/'+repo.getInfo.name.toLowerCase()] != undefined ){ %>

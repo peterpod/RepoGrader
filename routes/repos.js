@@ -18,7 +18,9 @@ var github = new GitHubApi({
     }
 });
 
-var repositories = []; // array to store all repo info
+repositories = []; // array to store all repo info
+//TODO fix so not global
+//exports.repositories = repositories;
 var reviews = {}; //object to store reviews for repo's
 
 //checks to see if all requests have been completed by looking for specific fields
@@ -296,7 +298,6 @@ router.post('/review/', function(req, res) {
 
     res.redirect('../../repos');
 });
-
 
 
 module.exports = router;
