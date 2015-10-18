@@ -12,9 +12,14 @@ var weights = {
 
 var formula = {
     mostRecentCommit: function(mostRecentCommitDate){
-        if(mostRecentCommitDate > 150) {
+        var thirtyDaysAgo = new Date(); 
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        var ninetyDaysAgo = new Date(); 
+        ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+
+        if(mostRecentCommitDate > thirtyDaysAgo) {
             return 2; 
-        } else if (mostRecentCommitDate > 35) { //if number is above 150 it will hit first if
+        } else if (mostRecentCommitDate > ninetyDaysAgo) {
             return 1;
         } else {
             return 0;
@@ -78,7 +83,7 @@ var formula = {
 
 //pass in the number of points out of 15
 function convertNumberToLetterGrade(num){
-    var num = num/5;
+    var num = num/3;
     //    (0-1:F, 1-2:D, 2-3:C, 3-4:B, 4-5:A)
     if (num <= 1){
         return "F";
@@ -97,9 +102,10 @@ function convertNumberToLetterGrade(num){
 
 function calculateGrade(repo){ //numForks, numWatchers, numStars, openIssuePercentage, resolutionTime, documentationLength
     totalPointsEarned =  3 + weights.forksWeight*formula.forks(repo.getInfo.forks_count) + 
-           weights.watcherWeight*formula.watchers(repo.getInfo.watchers_count);
+                             weights.watcherWeight*formula.watchers(repo.getInfo.watchers_count) +
+                             weights.mostRecentCommitWeight*formula.mostRecentCommit(new Date(repo.getInfo.updated_at));
     repoGradeID = '#'+repo.getInfo.owner.login+'_'+repo.getInfo.name+'_grade';
-    $(repoGradeID).html("Grade: "+ convertNumberToLetterGrade(totalPointsEarned));
+    $(repoGradeID).html("Grade: "+ convertNumberToLetterGrade(totalPointsEarned) +' '+ totalPointsEarned);
 }
 
 $(document).ready(function() {
