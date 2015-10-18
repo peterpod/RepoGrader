@@ -26,8 +26,8 @@
 	    Watchers: <strong>  <%= repo.getInfo.watchers_count %> </strong> <br/>
 	    Stars: <strong> <%= repo.getInfo.stargazers_count %> </strong><br/>	
 	    # of Forks: <strong> <%= repo.getInfo.forks_count %> </strong><br/>
-	    <br/>
-	    Open Issues: <strong> <%= repo.getInfo.open_issues_count %> </strong><br/>
+	    Open/Closed Issues: <strong> <%= repo.getInfo.open_issues_count %> open </strong> / <strong> <%= repo.closedIssueInfo.total_count %> closed </strong><br/>
+	   	(<strong><%= ((repo.getInfo.open_issues_count/repo.closedIssueInfo.total_count) * 100).toFixed(2) %>% </strong> of issues are open)<br/>
 	    <br/>
 	   	Last Updated: <strong> <%= new Date(repo.getInfo.updated_at ).toLocaleDateString("en-US")%> </strong><br/>
 	    <br/>

@@ -104,10 +104,11 @@ function calculateGrade(repo){ //numForks, numWatchers, numStars, openIssuePerce
     totalPointsEarned =  3 + weights.forksWeight*formula.forks(repo.getInfo.forks_count) + 
                              weights.watcherWeight*formula.watchers(repo.getInfo.watchers_count) +
                              weights.mostRecentCommitWeight*formula.mostRecentCommit(new Date(repo.getInfo.updated_at)) +
-                             weights.starsWeight*formula.stars(repo.getInfo.stargazers_count);
+                             weights.starsWeight*formula.stars(repo.getInfo.stargazers_count) +
+                             weights.openIssuesWeight*formula.openIssues(repo.getInfo.open_issues_count/repo.closedIssueInfo.total_count);
 
     repoGradeID = '#'+repo.getInfo.owner.login+'_'+repo.getInfo.name+'_grade';
-    $(repoGradeID).html("Grade: "+ convertNumberToLetterGrade(totalPointsEarned) +' '+ totalPointsEarned);
+    $(repoGradeID).html("Grade: "+ convertNumberToLetterGrade(totalPointsEarned));
 }
 
 $(document).ready(function() {
@@ -121,5 +122,12 @@ $(document).ready(function() {
 			calculateGrade(repositories[i]);
 		}
 	});
+
+    //if the user clicks regrade, regrade with new weights  
+    $('#regradeButton').click(function(){
+        for(var i = 0; i<repositories.length; i++){
+            calculateGrade(repositories[i]);
+        }
+    });
 
 });

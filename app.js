@@ -79,7 +79,6 @@ io.sockets.on('connection', function (socket) {
   currentlyOpen++;
   console.log("New window opened");
   console.log("currentlyOpen = "+currentlyOpen);
-  console.log(repositories);
   socket.emit('sendRepos', {"repositories":repositories});
   
   
