@@ -103,7 +103,9 @@ function convertNumberToLetterGrade(num){
 function calculateGrade(repo){ //numForks, numWatchers, numStars, openIssuePercentage, resolutionTime, documentationLength
     totalPointsEarned =  3 + weights.forksWeight*formula.forks(repo.getInfo.forks_count) + 
                              weights.watcherWeight*formula.watchers(repo.getInfo.watchers_count) +
-                             weights.mostRecentCommitWeight*formula.mostRecentCommit(new Date(repo.getInfo.updated_at));
+                             weights.mostRecentCommitWeight*formula.mostRecentCommit(new Date(repo.getInfo.updated_at)) +
+                             weights.starsWeight*formula.stars(repo.getInfo.stargazers_count);
+
     repoGradeID = '#'+repo.getInfo.owner.login+'_'+repo.getInfo.name+'_grade';
     $(repoGradeID).html("Grade: "+ convertNumberToLetterGrade(totalPointsEarned) +' '+ totalPointsEarned);
 }
