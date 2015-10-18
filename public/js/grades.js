@@ -6,7 +6,7 @@ var weights = {
     watcherWeight: 1, 
     starsWeight: 1,
     openIssuesWeight: 1,
-    resolutionTime: 1,
+    resolutionTimeWeight: 1,
     documentationWeight: 1
 }
 
@@ -61,10 +61,17 @@ var formula = {
             return 0;
         }
     },
-    issueResolution: function(resolutionTime){
-        if(resolutionTime > 150) {
+    issueResolution: function(issues){
+        var totalIssues = issues.length;
+        var sum = 0; 
+        for (var i=0; i<totalIssues; i++){
+            sum+= new Date(issues[i].closed_at) - new Date(issues[i].created_at)
+        }
+        var averageTime = sum/totalIssues;
+
+        if(averageTime < 86400000) { //less than a day
             return 2; 
-        } else if (resolutionTime > 35) { 
+        } else if (averageTime < 604800000) {  //less than a week
             return 1;
         } else {
             return 0;
@@ -80,6 +87,7 @@ var formula = {
         }
     }
 }
+
 
 //pass in the number of points out of 15
 function convertNumberToLetterGrade(num){
@@ -106,10 +114,12 @@ function calculateGrade(repo){ //numForks, numWatchers, numStars, openIssuePerce
                              weights.mostRecentCommitWeight*formula.mostRecentCommit(new Date(repo.getInfo.updated_at)) +
                              weights.starsWeight*formula.stars(repo.getInfo.stargazers_count) +
                              weights.openIssuesWeight*formula.openIssues(repo.getInfo.open_issues_count/repo.closedIssueInfo.total_count);
+                             weights.resolutionTimeWeight*formula.issueResolution(repo.closedIssueInfo.items);
 
     repoGradeID = '#'+repo.getInfo.owner.login+'_'+repo.getInfo.name+'_grade';
     $(repoGradeID).html("Grade: "+ convertNumberToLetterGrade(totalPointsEarned));
 }
+
 
 $(document).ready(function() {
 

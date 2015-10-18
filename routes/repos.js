@@ -40,6 +40,7 @@ function dataComplete(repoID, callback){
 
 /* routing function to get a user's repo */
 router.get('/', function(req, res) {
+
     // check to see if request was made with search bar
     if(Object.keys(req.query).length > 0){
         // safe to do .split on searchText
