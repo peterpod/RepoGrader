@@ -135,9 +135,18 @@ $(document).ready(function() {
 
     //if the user clicks regrade, regrade with new weights  
     $('#regradeButton').click(function(){
+        for (w in weights){
+            weights[w] = $('#'+w).val();
+        }
         for(var i = 0; i<repositories.length; i++){
             calculateGrade(repositories[i]);
         }
     });
+
+//http://stackoverflow.com/questions/4149276/javascript-camelcase-to-regular-form
+    for (w in weights){
+        $('#grading-modal-body').append('  <label>'+w.replace(/([A-Z])/g, ' $1').replace(/^./, function(str){ return str.toUpperCase(); })+'</label>' + ': <input id="'+w+'" class="form-control" value="'+  weights[w] +'"></input><br/>');
+
+    }
 
 });
