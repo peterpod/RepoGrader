@@ -113,7 +113,7 @@ function calculateGrade(repo){ //numForks, numWatchers, numStars, openIssuePerce
                              weights.watcherWeight*formula.watchers(repo.getInfo.watchers_count) +
                              weights.mostRecentCommitWeight*formula.mostRecentCommit(new Date(repo.getInfo.updated_at)) +
                              weights.starsWeight*formula.stars(repo.getInfo.stargazers_count) +
-                             weights.openIssuesWeight*formula.openIssues(repo.getInfo.open_issues_count/repo.closedIssueInfo.total_count);
+                             weights.openIssuesWeight*formula.openIssues(repo.getInfo.open_issues_count/repo.closedIssueInfo.total_count) +
                              weights.resolutionTimeWeight*formula.issueResolution(repo.closedIssueInfo.items);
 
     repoGradeID = '#'+repo.getInfo.owner.login+'_'+repo.getInfo.name+'_grade';
