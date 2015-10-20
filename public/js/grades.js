@@ -93,19 +93,21 @@ var formula = {
 
 //pass in the number of points out of 15
 function convertNumberToLetterGrade(num){
+    console.log(num)
     var num = num/divisor;
     //    (0-1:F, 1-2:D, 2-3:C, 3-4:B, 4-5:A)
+    console.log(num)
     if (num <= 1){
         return "F";
-    } else if (num > 1 && num <= 2){
+    } else if (num >= 1 && num < 2){
         return "D";
-    } else if (num > 2 && num <= 3){
+    } else if (num >= 2 && num < 3){
         return "C";
-    } else if (num > 3 && num <= 4){
+    } else if (num >= 3 && num < 4){
         return "B";
-    } else if (num > 4 && num <= 5){
+    } else if (num >= 4 && num < 5){
         return "A";
-    } else if (num > 5){
+    } else if (num >= 5){
         return "A+"
     }
 }
@@ -119,7 +121,7 @@ function calculateGrade(repo){ //numForks, numWatchers, numStars, openIssuePerce
                              weights.resolutionTimeWeight*formula.issueResolution(repo.closedIssueInfo.items);
 
     repoGradeID = '#'+repo.getInfo.owner.login+'_'+repo.getInfo.name+'_grade';
-    $(repoGradeID).html("Grade: "+ convertNumberToLetterGrade(totalPointsEarned)+ totalPointsEarned);
+    $(repoGradeID).html("Grade: "+ convertNumberToLetterGrade(totalPointsEarned)+" "+(1-(1-((totalPointsEarned/divisor)/5))/2).toFixed(2)*100+"%");
 }
 
 
