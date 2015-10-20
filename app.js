@@ -8,7 +8,11 @@ var express = require("express"),
     flash = require('connect-flash');
         
 // express will help us build the routes
-var app = express();
+
+var app = require('express')();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+
 
 app.set('views', __dirname + '/views');
 // Define the view (templating) engine
@@ -65,7 +69,26 @@ app.use('/repos', repos);
 
 
 var port = 50000;
-app.listen(port);
+server.listen(port);
+
+
+var currentlyOpen = 0; //number of clients
+console.log("currentlyOpen = "+currentlyOpen);
+// When a new connection is initiated
+io.sockets.on('connection', function (socket) {
+  currentlyOpen++;
+  console.log("New window opened");
+  console.log("currentlyOpen = "+currentlyOpen);
+  socket.emit('sendRepos', {"repositories":repositories});
+  
+  
+  socket.on('disconnect', function(){
+      console.log("Someone just left");
+      currentlyOpen--;
+      console.log("currentlyOpen = "+currentlyOpen);
+  });   
+});
+
 console.log("Server listening at http://localhost:50000/");
 
 module.exports = app;

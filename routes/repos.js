@@ -18,7 +18,9 @@ var github = new GitHubApi({
     }
 });
 
-var repositories = []; // array to store all repo info
+repositories = []; // array to store all repo info
+//TODO fix so not global
+//exports.repositories = repositories;
 var reviews = {}; //object to store reviews for repo's
 
 //checks to see if all requests have been completed by looking for specific fields
@@ -28,7 +30,7 @@ function dataComplete(repoID, callback){
     for (var ind = 0; ind < repositories.length; ind++) {
         console.log(Object.keys(repositories[ind]));
     }
-    if (repositories[i].getInfo!=null && repositories[i].commitActivity!=null && repositories[i].participation!=null && repositories[i].contributorList!=null && repositories[i].commitWeeklyGraph != null && repositories[i].commitDateGraph != null){
+    if (repositories[i].getInfo!=null && repositories[i].commitActivity!=null && repositories[i].participation!=null && repositories[i].contributorList!=null && repositories[i].commitWeeklyGraph != null && repositories[i].commitDateGraph != null && repositories[i].closedIssueInfo != null){
         return(callback( true ));
     }
     else{
@@ -38,6 +40,7 @@ function dataComplete(repoID, callback){
 
 /* routing function to get a user's repo */
 router.get('/', function(req, res) {
+
     // check to see if request was made with search bar
     if(Object.keys(req.query).length > 0){
         // safe to do .split on searchText
@@ -68,6 +71,40 @@ router.get('/', function(req, res) {
                     getInfo = {getInfo: data};
                     helpers.extend(repositories[i],getInfo);
                     console.log("ADDED getInfo info for REPO "+ repository)
+                }
+                dataComplete(repoID, function(complete){
+                    if (complete){
+                        res.render('home', { repos: repositories, 'reviews': reviews});
+                    }
+                });
+            }
+        });
+
+        // call github API to get issue info
+        github.search.issues({
+            q: "is:closed+repo:"+username+"/"+repository
+        }, function(err, data) {
+            var repoID = (username+"/"+repository).toLowerCase();
+            // error with request
+            if(err){
+                res.render('home', { message: "Could not find repository"});
+            }
+            else{
+                // if not stored add it to the array
+                if(!helpers.contains(repositories, repoID)){
+                    r = {repoID: repoID}
+                    closedIssueInfo = {closedIssueInfo: data};
+                    helpers.extend(r,closedIssueInfo);
+                    repositories.push(r);
+                    console.log("NEW REPO "+ repository +" closedIssueInfo");
+                    console.log(data);
+
+                } else {
+                    var i = helpers.index(repositories, repoID)
+                    closedIssueInfo = {closedIssueInfo: data};
+                    helpers.extend(repositories[i],closedIssueInfo);
+                    console.log("ADDED closedIssueInfo info for REPO "+ repository);
+                    console.log(data);
                 }
                 dataComplete(repoID, function(complete){
                     if (complete){
@@ -296,7 +333,6 @@ router.post('/review/', function(req, res) {
 
     res.redirect('../../repos');
 });
-
 
 
 module.exports = router;

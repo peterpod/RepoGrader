@@ -1,4 +1,4 @@
-<div class="col-sm-6">
+<div class="col-sm-6" id='<%= repo.getInfo.owner.login %>_<%= repo.getInfo.name%>'>
 	<div class="panel panel-default">
 	  <div class="panel-body">
 	    <h2><a href='<%= repo.getInfo.owner.html_url%>'><%= repo.getInfo.owner.login %> </a> / <a href='<%= repo.getInfo.html_url %>'><%= repo.getInfo.name %> </a>
@@ -9,6 +9,7 @@
 				</button>
 			</form>
 		</h2>
+		<h3 id='<%= repo.getInfo.owner.login %>_<%= repo.getInfo.name%>_grade'>Grade: </h3>
 
 		<% if( Object.keys(reviews).length > 0) { %>
 			<% if( reviews[repo.getInfo.owner.login+'/'+repo.getInfo.name.toLowerCase()] != undefined ){ %>
@@ -25,8 +26,8 @@
 	    Watchers: <strong>  <%= repo.getInfo.watchers_count %> </strong> <br/>
 	    Stars: <strong> <%= repo.getInfo.stargazers_count %> </strong><br/>	
 	    # of Forks: <strong> <%= repo.getInfo.forks_count %> </strong><br/>
-	    <br/>
-	    Open Issues: <strong> <%= repo.getInfo.open_issues_count %> </strong><br/>
+	    Open/Closed Issues: <strong> <%= repo.getInfo.open_issues_count %> open </strong> / <strong> <%= repo.closedIssueInfo.total_count %> closed </strong><br/>
+	   	(<strong><%= ((repo.getInfo.open_issues_count/repo.closedIssueInfo.total_count) * 100).toFixed(2) %>% </strong> of issues are open)<br/>
 	    <br/>
 	   	Last Updated: <strong> <%= new Date(repo.getInfo.updated_at ).toLocaleDateString("en-US")%> </strong><br/>
 	    <br/>
