@@ -1,6 +1,4 @@
-
-<div class="row" id='<%= repo.getInfo.owner.login %>_<%= repo.getInfo.name%>'>
-	<div class="col s12 m6">
+	<div class="col s12 m6" id='<%= repo.getInfo.owner.login %>_<%= repo.getInfo.name%>'>
 	  <div class="card">
 	    <h3><a href='<%= repo.getInfo.owner.html_url%>'><%= repo.getInfo.owner.login %> </a> / <a href='<%= repo.getInfo.html_url %>'><%= repo.getInfo.name %> </a>
 		    <form action="/repos/<%= repo.getInfo.owner.login %>/<%= repo.getInfo.name %>" method="post" enctype='application/x-www-form-urlencoded'>
@@ -60,4 +58,3 @@
 	    <% } %> 
 	  </div>
 	</div>
-</div>
