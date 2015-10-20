@@ -10,7 +10,7 @@ var weights = {
     documentationWeight: 1
 }
 
-var divisor = 3; 
+var divisor = 3.5; 
 
 var formula = {
     mostRecentCommit: function(mostRecentCommitDate){
