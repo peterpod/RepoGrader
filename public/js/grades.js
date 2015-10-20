@@ -10,6 +10,8 @@ var weights = {
     documentationWeight: 1
 }
 
+var divisor = 3; 
+
 var formula = {
     mostRecentCommit: function(mostRecentCommitDate){
         var thirtyDaysAgo = new Date(); 
@@ -91,7 +93,7 @@ var formula = {
 
 //pass in the number of points out of 15
 function convertNumberToLetterGrade(num){
-    var num = num/3;
+    var num = num/divisor;
     //    (0-1:F, 1-2:D, 2-3:C, 3-4:B, 4-5:A)
     if (num <= 1){
         return "F";
@@ -117,7 +119,7 @@ function calculateGrade(repo){ //numForks, numWatchers, numStars, openIssuePerce
                              weights.resolutionTimeWeight*formula.issueResolution(repo.closedIssueInfo.items);
 
     repoGradeID = '#'+repo.getInfo.owner.login+'_'+repo.getInfo.name+'_grade';
-    $(repoGradeID).html("Grade: "+ convertNumberToLetterGrade(totalPointsEarned));
+    $(repoGradeID).html("Grade: "+ convertNumberToLetterGrade(totalPointsEarned)+ totalPointsEarned);
 }
 
 
@@ -135,9 +137,14 @@ $(document).ready(function() {
 
     //if the user clicks regrade, regrade with new weights  
     $('#regradeButton').click(function(){
+        var sumOfWeights = 0
         for (w in weights){
             weights[w] = $('#'+w).val();
+            sumOfWeights += parseInt(weights[w]);
         }
+
+        divisor = sumOfWeights/2;
+
         for(var i = 0; i<repositories.length; i++){
             calculateGrade(repositories[i]);
         }
