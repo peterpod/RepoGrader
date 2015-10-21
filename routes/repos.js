@@ -17,7 +17,15 @@ var github = new GitHubApi({
         "user-agent": "My-Cool-GitHub-App" // GitHub is happy with a unique user agent
     }
 });
+github.authenticate({
 
+    type: "basic",
+    username: "szsheikh",
+    password: "$@Num427"
+});
+//     type: "oauth",
+//     token: "b7fc20b43390847624f405daf248006df51c158e"
+// })
 repositories = []; // array to store all repo info
 //TODO fix so not global
 //exports.repositories = repositories;
