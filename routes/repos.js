@@ -1,8 +1,8 @@
 var GitHubApi = require("github"); // require git API
 var express = require('express'),
-    router = express.Router(),
-    bodyParser = require("body-parser"),
-    helpers = require("utils");
+router = express.Router(),
+bodyParser = require("body-parser"),
+helpers = require("utils");
 
 var github = new GitHubApi({
     // required
@@ -17,7 +17,15 @@ var github = new GitHubApi({
         "user-agent": "My-Cool-GitHub-App" // GitHub is happy with a unique user agent
     }
 });
+github.authenticate({
 
+    type: "basic",
+    username: "szsheikh",
+    password: "$@Num427"
+});
+//     type: "oauth",
+//     token: "b7fc20b43390847624f405daf248006df51c158e"
+// })
 repositories = []; // array to store all repo info
 //TODO fix so not global
 //exports.repositories = repositories;
@@ -36,7 +44,7 @@ function dataComplete(repoID, callback){
     else{
         return(callback(false));
     }
- }
+}
 
 /* routing function to get a user's repo */
 router.get('/', function(req, res) {
@@ -115,11 +123,11 @@ router.get('/', function(req, res) {
         });
 
 
-        github.repos.getStatsCommitActivity({
-            user: username,
-            repo: repository
-        }, function(err, data) {
-            var repoID = (username+"/"+repository).toLowerCase();
+github.repos.getStatsCommitActivity({
+    user: username,
+    repo: repository
+}, function(err, data) {
+    var repoID = (username+"/"+repository).toLowerCase();
             // error with request
             if(err){
                 res.render('home', { message: "Could not find repository"});
@@ -202,11 +210,11 @@ router.get('/', function(req, res) {
             }
         });
 
-        github.repos.getStatsParticipation({
-            user: username,
-            repo: repository
-        }, function(err, data) {
-            var repoID = (username+"/"+repository).toLowerCase();
+github.repos.getStatsParticipation({
+    user: username,
+    repo: repository
+}, function(err, data) {
+    var repoID = (username+"/"+repository).toLowerCase();
             // error with request
             if(err){
                 res.render('home', { message: "Could not find repository"});
@@ -265,7 +273,7 @@ router.get('/', function(req, res) {
                 });
             }
         });
-    }
+}
     // no query string was used so we will just load the home page
     else{
         res.render('home', { repos: repositories, 'reviews': reviews});

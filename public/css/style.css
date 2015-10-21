@@ -2,3 +2,25 @@
     float: none;
     margin: 0 auto;
 }
+
+html {
+  font-family:  Helvetica,Arial,sans-serif;
+}
+
+.btn.btn-default{
+	padding-left: 15px;
+	padding-right: 15px;
+	font-size: 12px;
+}
+
+#search{
+	margin-top:5px;
+}
+
+#searchText{
+  font-size:16px;
+  height:40px;
+  border-radius:10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+}

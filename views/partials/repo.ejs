@@ -1,15 +1,17 @@
-<div class="col-sm-6" id='<%= repo.getInfo.owner.login %>_<%= repo.getInfo.name%>'>
-	<div class="panel panel-default">
-	  <div class="panel-body">
-	    <h2><a href='<%= repo.getInfo.owner.html_url%>'><%= repo.getInfo.owner.login %> </a> / <a href='<%= repo.getInfo.html_url %>'><%= repo.getInfo.name %> </a>
+
+
+	<div class="col s12 m6" id='<%= repo.getInfo.owner.login %>_<%= repo.getInfo.name%>'>
+	  <div class="card">
+	    <h3><a href='<%= repo.getInfo.owner.html_url%>'><%= repo.getInfo.owner.login %> </a> / <a href='<%= repo.getInfo.html_url %>'><%= repo.getInfo.name %> </a>
 		    <form action="/repos/<%= repo.getInfo.owner.login %>/<%= repo.getInfo.name %>" method="post" enctype='application/x-www-form-urlencoded'>
 		    	<input type="hidden" name="_method" value="delete"/>
-			    <button type="submit" class="btn btn-default" aria-label="Right Align" style="float:right;">
-				  <span class="glyphicon glyphicon-remove align-right" aria-hidden="true"></span>
+		    		<button type="submit" class="btn-floating btn-large waves-effect waves-light" aria-label="Right Align" style="float:right; margin-top:-1.5em;">
+							<h5>x</h5>
+						</button>
 				</button>
 			</form>
-		</h2>
-		<h3 id='<%= repo.getInfo.owner.login %>_<%= repo.getInfo.name%>_grade'>Grade: </h3>
+		</h3>
+		<h4 id='<%= repo.getInfo.owner.login %>_<%= repo.getInfo.name%>_grade'>Grade: </h4>
 
 		<% if( Object.keys(reviews).length > 0) { %>
 			<% if( reviews[repo.getInfo.owner.login+'/'+repo.getInfo.name.toLowerCase()] != undefined ){ %>
@@ -34,16 +36,16 @@
 	    
 	    Primary Language: <strong> <%= repo.getInfo.language %> </strong><br/>
 	    <br>	    
-	    <h2 style='margin:0px;'>Commit Activity</h2>
+	    <h5 style='margin:0px;'>Commit Activity</h5>
 	    	<% if (repo.commitWeeklyGraph != undefined) { %>
-	    		<h4 style='margin:0px;'>Commits per days of Week</h4>
+	    		<h6 style='margin:0px;'>Commits per days of Week</h>
 	    		<div>
 				    <a href="<%= repo.commitWeeklyGraph %>" target="_blank" title="y" style="display: block; text-align: center;"><img src="<%= repo.commitWeeklyGraph %>.png" alt="y" style="max-width: 100%;width: 600px;"  width="600" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
 				    <script data-plotly="peterpod:<%= repo.commitWeeklyGraph.split('/')[repo.commitWeeklyGraph.split('/').length-1] %>"  src="https://plot.ly/embed.js" async></script>
 				</div>
 			<% } %>
 			<% if (repo.commitDateGraph != undefined) { %>
-			    <h4 style='margin:0px;'>Commit History</h4>
+			    <h5 style='margin:0px;'>Commit History</h5>
 			    <div>
 				    <a href="<%= repo.commitDateGraph %>" target="_blank" title="y" style="display: block; text-align: center;"><img src="<%= repo.commitDateGraph %>.png" alt="y" style="max-width: 100%;width: 600px;"  width="600" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
 				    <script data-plotly="peterpod:<%= repo.commitDateGraph.split('/')[repo.commitDateGraph.split('/').length-1] %>"  src="https://plot.ly/embed.js" async></script>
@@ -60,4 +62,3 @@
 	    <a href='/repos/contributor/<%= repo.getInfo.owner.login %>/<%= repo.getInfo.name %>' class="btn btn-default" aria-label="Left Align">Load Contributors</a>
 	  </div>
 	</div>
-</div>
