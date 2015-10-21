@@ -5,7 +5,7 @@
 	    <h3><a href='<%= repo.getInfo.owner.html_url%>'><%= repo.getInfo.owner.login %> </a> / <a href='<%= repo.getInfo.html_url %>'><%= repo.getInfo.name %> </a>
 		    <form action="/repos/<%= repo.getInfo.owner.login %>/<%= repo.getInfo.name %>" method="post" enctype='application/x-www-form-urlencoded'>
 		    	<input type="hidden" name="_method" value="delete"/>
-		    		<button type="submit" class="btn-floating btn-large waves-effect waves-light" aria-label="Right Align" style="float:right; margin-top:-1.5em">
+		    		<button type="submit" class="btn-floating btn-large waves-effect waves-light" aria-label="Right Align" style="float:right; margin-top:-1.5em;">
 							<h5>x</h5>
 						</button>
 				</button>
