@@ -57,6 +57,7 @@
 	    <% if( reviews[repo.getInfo.owner.login+'/'+repo.getInfo.name.toLowerCase()] != undefined ){ %>
 	    	<a href='/repos/review/<%= repo.getInfo.owner.login %>/<%= repo.getInfo.name %>' class="btn btn-default" aria-label="Left Align">Load Reviews</a>
 	    <% } %> 
+	    <a href='/repos/contributor/<%= repo.getInfo.owner.login %>/<%= repo.getInfo.name %>' class="btn btn-default" aria-label="Left Align">Load Contributors</a>
 	  </div>
 	</div>
 </div>
