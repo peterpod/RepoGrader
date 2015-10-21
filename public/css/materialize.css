@@ -1649,8 +1649,8 @@
  *    user zoom.
  */
 html {
-  font-family: "Impact", Charcoal, sans-serif;
   /* 1 */
+  font-family:  Helvetica,Arial,sans-serif;
   -ms-text-size-adjust: 100%;
   /* 2 */
   -webkit-text-size-adjust: 100%;
