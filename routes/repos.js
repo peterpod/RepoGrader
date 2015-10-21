@@ -288,6 +288,19 @@ router.route('/:user/:repo').delete(function(req, res) {
 });
 
 /* routing function to add review for a repo */
+router.get('/contributor/:user/:repo', function(req, res) {
+    var user = req.params.user;
+    var repo = req.params.repo;
+    var repoID = (user + '/' + repo).toLowerCase();
+
+    var i = helpers.index(repositories, repoID);
+
+    repo = repositories[i];
+    // route to the addReview page
+    res.render('contributors', { 'repo': repo });
+});
+
+/* routing function to add review for a repo */
 router.route('/review/add/:user/:repo').get(function(req, res) {
     var user = req.params.user;
     var repo = req.params.repo;
