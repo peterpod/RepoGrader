@@ -14,13 +14,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/js/materialize.min.js"></script>
   <link href="/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
   <link href="/css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
-  <!-- Latest compiled and minified CSS -->
-<!--   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
- -->
-  <!-- Optional theme -->
-<!--   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
- -->
-  <!-- Latest compiled and minified JavaScript -->
+
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <!-- stars -->
   <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
@@ -36,57 +30,21 @@
 <body>
   <nav class="blue-grey lighten-5" style="padding-left: 2em;" role="navigation">
     <a href="/home" class="blue-grey-text darken-3-text" style="float: left; margin-left: 2em; margin-right: 3em;">Git Graded</a>
-
-    <!-- Form for search bar -->    <!-- /.row -->
-
   </nav>
- 
-                <br/>
-        <!-- Launch grading modal button -->
-         <div class="row">
-          <div class="col-lg-4 col-centered text-center", style="margin-left: 55em;">
-            <!-- Form for search bar -->
-            <button type="button" class="btn" data-toggle="modal" data-target="#gradingModal">Edit Grading Formula</button>
-          </div><!-- /.col-lg-4 -->
-        </div><!-- /.row -->
-        <!--Grading Modal -->
-        <div class="modal fade" id="gradingModal" tabindex="-1" role="dialog" aria-labelledby="gradingModalLabel">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>       </button>
-                <h4 class="modal-title" id="gradingModalLabel">Edit Formula</h4>
-              </div>
-              <div id="grading-modal-body" class="modal-body">
-                
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" id="regradeButton" class="btn btn-primary">Regrade Repositories</button>
-              </div>
-            </div>
-          </div>
-        </div><!-- End modal -->
-      </div>
-    </div>
 
   <div class="container">
-      <!-- Review Form -->
-      <div class="row">
-          <!-- Check to see if we are adding a review -->
-          <% if(typeof addReview!='undefined') { %>
-            <% include partials/addReview %> 
-          <% } %>
-      </div>
+    <!-- Review Form -->
+    <div class="row">
+      <!-- Check to see if we are adding a review -->
+      <% if(typeof addReview!='undefined') { %>
+      <% include partials/addReview %> 
+      <% } %>
+    </div>
 
-      <footer>
-        <p class="col-centered text-center">&copy; Innovation for Information Systems 2015</p>
-      </footer>
+    <footer>
+      <p class="col-centered text-center">&copy; Innovation for Information Systems 2015</p>
+    </footer>
   </div> <!-- /container -->
 
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-  </body>
+</body>
 </html>

@@ -1,8 +1,8 @@
 var GitHubApi = require("github"); // require git API
 var express = require('express'),
-    router = express.Router(),
-    bodyParser = require("body-parser"),
-    helpers = require("utils");
+router = express.Router(),
+bodyParser = require("body-parser"),
+helpers = require("utils");
 
 var github = new GitHubApi({
     // required
@@ -44,7 +44,7 @@ function dataComplete(repoID, callback){
     else{
         return(callback(false));
     }
- }
+}
 
 /* routing function to get a user's repo */
 router.get('/', function(req, res) {
@@ -123,11 +123,11 @@ router.get('/', function(req, res) {
         });
 
 
-        github.repos.getStatsCommitActivity({
-            user: username,
-            repo: repository
-        }, function(err, data) {
-            var repoID = (username+"/"+repository).toLowerCase();
+github.repos.getStatsCommitActivity({
+    user: username,
+    repo: repository
+}, function(err, data) {
+    var repoID = (username+"/"+repository).toLowerCase();
             // error with request
             if(err){
                 res.render('home', { message: "Could not find repository"});
@@ -210,11 +210,11 @@ router.get('/', function(req, res) {
             }
         });
 
-        github.repos.getStatsParticipation({
-            user: username,
-            repo: repository
-        }, function(err, data) {
-            var repoID = (username+"/"+repository).toLowerCase();
+github.repos.getStatsParticipation({
+    user: username,
+    repo: repository
+}, function(err, data) {
+    var repoID = (username+"/"+repository).toLowerCase();
             // error with request
             if(err){
                 res.render('home', { message: "Could not find repository"});
@@ -273,7 +273,7 @@ router.get('/', function(req, res) {
                 });
             }
         });
-    }
+}
     // no query string was used so we will just load the home page
     else{
         res.render('home', { repos: repositories, 'reviews': reviews});
